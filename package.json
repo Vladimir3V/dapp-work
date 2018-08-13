@@ -1,0 +1,26 @@
+{
+  "name": "dapp-work",
+  "version": "0.1.0",
+  "description": "Ethereum Decentralised Labor Exchange (Solidity, Web3, Vue.js)",
+  "main": "index.html",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "openzeppelin-solidity": "^1.11.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drag0no/dapp-work.git"
+  },
+  "author": "drag0no (Pavel Krot - krotpv@gmail.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/drag0no/dapp-work/issues"
+  },
+  "homepage": "https://github.com/drag0no/dapp-work#readme"
+}

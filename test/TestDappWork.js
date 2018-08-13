@@ -16,7 +16,444 @@ contract('DappWork', accounts => {
       dappWork = await DappWork.deployed();
     });
 
-    it('Check the owner', async () => {
+    it("[OK] Check the 'owner' accounts#0)", async () => {
         assert.equal(await dappWork.owner.call(), accounts[0]);
+    });
+
+    it("[OK] Add three moders (accounts#1-3) from 'owner' account#0", async () => {
+        await dappWork.addModer(accounts[1], {from: accounts[0]});
+        await dappWork.addModer(accounts[2], {from: accounts[0]});
+        await dappWork.addModer(accounts[3], {from: accounts[0]});
+        assert.equal(await dappWork.moders.call(accounts[1]), true);
+        assert.equal(await dappWork.moders.call(accounts[2]), true);
+        assert.equal(await dappWork.moders.call(accounts[3]), true);
+    });
+
+    it("[REVERT] Remove moder (account#3) from 'unknown' account#4", async () => {
+        assert.ok(await hasReverted(
+            dappWork.removeModer(accounts[3], {from: accounts[4]})
+        ));
+    });
+
+    it("[REVERT] Remove moder (account#3) from 'moder' account#1", async () => {
+        assert.ok(await hasReverted(
+            dappWork.removeModer(accounts[3], {from: accounts[1]})
+        ));
+    });
+
+    it("[OK] Remove moder (account#3) from 'owner' account#0", async () => {
+        await dappWork.removeModer(accounts[3], {from: accounts[0]});
+        assert.equal(await dappWork.moders.call(accounts[3]), false);
+    });
+
+    it("[REVERT] Add moder (account#3) from 'unknown' account#4", async () => {
+        assert.ok( await hasReverted(
+            dappWork.addModer(accounts[3], {from: accounts[4]})
+        ));
+    });
+
+    it("[REVERT] Add moder (account#3) from 'moder' account#1", async () => {
+        assert.ok( await hasReverted(
+            dappWork.addModer(accounts[3], {from: accounts[1]})
+        ));
+    });
+
+    const house_edge = 1;
+    const zero_address = "0x0000000000000000000000000000000000000000";
+
+    const order01_title = "Blockchain developer needed";
+    const order01_email = "eth_customer@gmail.com";
+    const order01_contact = "skype: eth_b0ss";
+    
+    const order02_title = "Smart guy needed";
+    const order02_email = "cool_guy@yahoo.com";
+    const order02_contact = "telegram: @c00l_guy";
+
+    const text_hash = "QmWWQSuPMS6aXCbZKpEjPHPUZN2NjB3YrhJTHsV4X3vb2t";
+    const file_hash = "QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG";
+
+    const price = web3.toWei(1, 'ether');
+
+    let current_contract_profit = 0;
+
+
+    it("[REVERT] Create order with low price", async () => {
+        assert.ok(await hasReverted(
+            dappWork.createOrder(order01_title, order01_email, order01_contact, text_hash, file_hash, {from: accounts[3], value: web3.toWei(0.009, 'ether')})
+        ));
+    });
+
+    it("[REVERT] Get/modify/remove/setFreelancer/unlock/complete for for a non-existent order", async () => {
+        assert.ok(await hasReverted(
+            dappWork.getOrderById(3, {from: accounts[4]})
+        ));
+        assert.ok(await hasReverted(
+            dappWork.unlockOrderOwner(3, {from: accounts[4]})
+        ));
+        assert.ok(await hasReverted(
+            dappWork.unlockOrderFreelancer(3, {from: accounts[4]})
+        ));
+        assert.ok(await hasReverted(
+            dappWork.modifyOrder(3, order01_title, order01_email, order01_contact,
+                text_hash, file_hash, {from: accounts[4], value: price*2})
+        ));
+        assert.ok(await hasReverted(
+            dappWork.removeOrder(3, {from: accounts[4]})
+        ));
+        assert.ok(await hasReverted(
+            dappWork.setOrderFreelancer(3, accounts[5], {from: accounts[4]})
+        ));
+        assert.ok(await hasReverted(
+            dappWork.completeOrder(3, {from: accounts[4]})
+        ));
+    });
+
+    it("[OK] Add two orders from account#3", async () => {
+        await dappWork.createOrder(order01_title, order01_email, order01_contact, text_hash, file_hash, {from: accounts[3], value: price});
+        await dappWork.createOrder(order02_title, order02_email, order02_contact, text_hash, file_hash, {from: accounts[3], value: price});
+        
+        var orders_length = await dappWork.getOrdersCount();
+        assert.equal(orders_length, 2);
+
+        let [o1_id, o1_owner_addr, o1_freelancer_addr, 
+            o1_title, o1_email, o1_contact,
+            o1_budget, o1_ipfs_text, o1_ipfs_file,
+            o1_owner_lock, o1_freelancer_lock] = await dappWork.ordersList.call(0);
+        
+        o1_title = web3.toUtf8(o1_title);
+        o1_email = web3.toUtf8(o1_email);
+        o1_contact = web3.toUtf8(o1_contact);
+        
+        // console.log(o1_id, o1_owner_addr, o1_freelancer_addr, 
+        //     o1_title, o1_email, o1_contact,
+        //     o1_budget, o1_ipfs_text, o1_ipfs_file,
+        //     o1_owner_lock, o1_freelancer_lock);
+            
+        assert.equal(o1_id, 1);
+        assert.equal(o1_owner_addr, accounts[3]);
+        assert.equal(o1_freelancer_addr, zero_address);
+        assert.equal(o1_title, order01_title);
+        assert.equal(o1_email, order01_email);
+        assert.equal(o1_contact, order01_contact);
+        assert.equal(o1_budget, price);
+        assert.equal(o1_ipfs_text, text_hash);
+        assert.equal(o1_ipfs_file, file_hash);
+        assert.equal(o1_owner_lock, false);
+        assert.equal(o1_freelancer_lock, false);
+
+        let [o2_id, o2_owner_addr, o2_freelancer_addr, 
+            o2_title, o2_email, o2_contact,
+            o2_budget, o2_ipfs_text, o2_ipfs_file,
+            o2_owner_lock, o2_freelancer_lock] = await dappWork.ordersList.call(1);
+        
+        o2_title = web3.toUtf8(o2_title);
+        o2_email = web3.toUtf8(o2_email);
+        o2_contact = web3.toUtf8(o2_contact);
+        
+        // console.log(o2_id, o2_owner_addr, o2_freelancer_addr, 
+        //     o2_title, o2_email, o2_contact,
+        //     o2_budget, o2_ipfs_text, o2_ipfs_file,
+        //     o2_owner_lock, o2_freelancer_lock);
+            
+        assert.equal(o2_id, 2);
+        assert.equal(o2_owner_addr, accounts[3]);
+        assert.equal(o2_freelancer_addr, zero_address);
+        assert.equal(o2_title, order02_title);
+        assert.equal(o2_email, order02_email);
+        assert.equal(o2_contact, order02_contact);
+        assert.equal(o2_budget, price);
+        assert.equal(o2_ipfs_text, text_hash);
+        assert.equal(o2_ipfs_file, file_hash);
+        assert.equal(o2_owner_lock, false);
+        assert.equal(o2_freelancer_lock, false);
+    });
+
+    it("[REVERT] Remove first order#1 from 'unknown' account#4", async () => {
+        assert.ok(await hasReverted(
+            dappWork.removeOrder(1, {from: accounts[4]})
+        ));
+    });
+
+    it("[OK] Remove first order#1 from 'owner' account#3", async () => {
+        await dappWork.removeOrder(1, {from: accounts[3]});
+
+        var orders_length = await dappWork.getOrdersCount();
+        assert.equal(orders_length, 1);
+
+        let [o2_id, o2_owner_addr, o2_freelancer_addr, 
+            o2_title, o2_email, o2_contact,
+            o2_budget, o2_ipfs_text, o2_ipfs_file,
+            o2_owner_lock, o2_freelancer_lock] = await dappWork.ordersList.call(0);
+        
+        o2_title = web3.toUtf8(o2_title);
+        o2_email = web3.toUtf8(o2_email);
+        o2_contact = web3.toUtf8(o2_contact);
+        
+        // console.log(o2_id, o2_owner_addr, o2_freelancer_addr, 
+        //     o2_title, o2_email, o2_contact,
+        //     o2_budget, o2_ipfs_text, o2_ipfs_file,
+        //     o2_owner_lock, o2_freelancer_lock);
+            
+        assert.equal(o2_id, 2);
+        assert.equal(o2_owner_addr, accounts[3]);
+        assert.equal(o2_freelancer_addr, zero_address);
+        assert.equal(o2_title, order02_title);
+        assert.equal(o2_email, order02_email);
+        assert.equal(o2_contact, order02_contact);
+        assert.equal(o2_budget, price);
+        assert.equal(o2_ipfs_text, text_hash);
+        assert.equal(o2_ipfs_file, file_hash);
+        assert.equal(o2_owner_lock, false);
+        assert.equal(o2_freelancer_lock, false);
+    });
+
+    it("[REVERT] Modify second order#2 from 'unknown' account#4", async () => {
+        assert.ok(await hasReverted(
+            dappWork.modifyOrder(2, order01_title, order01_contact, order01_contact,
+                text_hash, text_hash, {from: accounts[4], value: price*2})
+        ));
+    });
+
+    it("[OK] Modify second order#2 from 'owner' account#3", async () => {
+        // let [o2_id, o2_owner_addr, o2_freelancer_addr, 
+        //     o2_title, o2_email, o2_contact, o2_budget,
+        //     o2_ipfs_text, o2_ipfs_file, o2_lock] = await dappWork.getOrderById(2);
+
+        // o2_title = web3.toUtf8(o2_title);
+        // o2_email = web3.toUtf8(o2_email);
+        // o2_contact = web3.toUtf8(o2_contact);
+
+        // console.log(o2_id, o2_owner_addr, o2_freelancer_addr, 
+        //     o2_title, o2_email, o2_contact, o2_budget,
+        //     o2_ipfs_text, o2_ipfs_file, o2_lock);
+
+        await dappWork.modifyOrder(2, order01_title, order01_email, order01_contact,
+            text_hash, file_hash, {from: accounts[3], value: price*2});
+
+        let [o2_id, o2_owner_addr, o2_freelancer_addr, 
+            o2_title, o2_email, o2_contact, o2_budget,
+            o2_ipfs_text, o2_ipfs_file, o2_lock] = await dappWork.getOrderById(2);
+        
+        o2_title = web3.toUtf8(o2_title);
+        o2_email = web3.toUtf8(o2_email);
+        o2_contact = web3.toUtf8(o2_contact);
+        
+        // console.log(o2_id, o2_owner_addr, o2_freelancer_addr, 
+        //     o2_title, o2_email, o2_contact, o2_budget,
+        //     o2_ipfs_text, o2_ipfs_file, o2_lock);
+
+        assert.equal(o2_id, 2);
+        assert.equal(o2_owner_addr, accounts[3]);
+        assert.equal(o2_freelancer_addr, zero_address);
+        assert.equal(o2_title, order01_title);
+        assert.equal(o2_email, order01_email);
+        assert.equal(o2_contact, order01_contact);
+        assert.equal(o2_budget, price*2);
+        assert.equal(o2_ipfs_text, text_hash);
+        assert.equal(o2_ipfs_file, file_hash);
+        assert.equal(o2_lock, false);
+    });
+
+    it("[REVERT] Set freelancer for order#2 from 'unknown' account#4", async () => {
+        assert.ok(await hasReverted(
+            dappWork.setOrderFreelancer(2, accounts[5], {from: accounts[4]})
+        ));
+    });
+
+    it("[REVERT] Set freelancer for order#2 from 'moder' account#1", async () => {
+        assert.ok(await hasReverted(
+            dappWork.setOrderFreelancer(2, accounts[5], {from: accounts[1]})
+        ));
+    });
+
+    it("[OK] Set account#5 as freelancer for order#2 from 'owner' account#3", async () => {
+        await dappWork.setOrderFreelancer(2, accounts[5], {from: accounts[3]});
+        let [o2_id, o2_owner_addr, o2_freelancer_addr, 
+            o2_title, o2_email, o2_contact, o2_budget,
+            o2_ipfs_text, o2_ipfs_file, o2_lock] = await dappWork.getOrderById(2);
+        assert.equal(o2_freelancer_addr, accounts[5]);
+        assert.equal(o2_lock, true);
+    });
+
+    it("[OK] Check from account#5 that he was added to an order#2", async () => {
+        assert.equal(await dappWork.isMyselfApprovedForOrder(2, {from: accounts[5]}), true);
+    });
+
+    it("[REVERT] Unlock order#2 from 'unknown' account#4", async () => {
+        assert.ok(await hasReverted(
+            dappWork.unlockOrderOwner(2, {from: accounts[4]})
+        ));
+        assert.ok(await hasReverted(
+            dappWork.unlockOrderFreelancer(2, {from: accounts[4]})
+        ));
+    });
+
+    it("[REVERT] Modify or remove order#2 from 'owner' account#3 when the order is LOCKED", async () => {
+        assert.ok(await hasReverted(
+            dappWork.modifyOrder(2, order01_title, order01_contact, order01_contact,
+                text_hash, text_hash, {from: accounts[3], value: price*2})
+        ));
+        assert.ok(await hasReverted(
+            dappWork.removeOrder(2, {from: accounts[3]})
+        ));
+    });
+
+    it("[REVERT] Modify or remove order#2 from 'owner' account#3 when the order is partially LOCKED", async () => {
+        await dappWork.unlockOrderOwner(2, {from: accounts[3]});
+
+        let [o_id, o_owner_addr, o_freelancer_addr, 
+            o_title, o_email, o_contact,
+            o_budget, o_ipfs_text, o_ipfs_file,
+            o_owner_lock, o_freelancer_lock] = await dappWork.ordersList.call(0);
+
+        let [o2_id, o2_owner_addr, o2_freelancer_addr, 
+            o2_title, o2_email, o2_contact,
+            o2_budget, o2_ipfs_text, o2_ipfs_file,
+            o_lock] = await dappWork.getOrderById(2);
+
+        assert.equal(o_owner_lock, false);
+        assert.equal(o_freelancer_lock, true);
+        assert.equal(o_lock, true);
+        assert.ok(await hasReverted(
+            dappWork.modifyOrder(2, order01_title, order01_contact, order01_contact,
+                text_hash, text_hash, {from: accounts[3], value: price*2})
+        ));
+        assert.ok(await hasReverted(
+            dappWork.removeOrder(2, {from: accounts[3]})
+        ));
+    });
+
+    it("[OK] Remove order#2 from 'owner' account#3 when order is UNLOCKED", async () => {
+        await dappWork.unlockOrderFreelancer(2, {from: accounts[5]});
+        await dappWork.removeOrder(2, {from: accounts[3]});
+
+        var orders_length = await dappWork.getOrdersCount();
+        assert.equal(orders_length, 0);
+    });
+
+    it("[OK] Create and complete order#3 by owner", async () => {
+        // 1. Create order from account#4
+        // 2. Set freelancer: account#5 
+        // 3. Complete order
+        // 4. Check balance of freelancer (it should be bigger)
+        let freelancer_balance_before = await web3.eth.getBalance(accounts[5]).toNumber();
+        let freelancer_balance_estimated = freelancer_balance_before + price * (100 - house_edge) / 100;
+
+        await dappWork.createOrder(order01_title, order01_email, order01_contact,
+            text_hash, file_hash, {from: accounts[4], value: price});
+        
+        let order_id = await dappWork.lastOrderId.call();
+        
+        await dappWork.setOrderFreelancer(order_id, accounts[5], {from: accounts[4]});
+        await dappWork.completeOrder(order_id, {from: accounts[4]});
+
+        let freelancer_balance_after = await web3.eth.getBalance(accounts[5]).toNumber();
+        // console.log(freelancer_balance_before, freelancer_balance_estimated, freelancer_balance_after);
+        
+        assert.equal(order_id, 3);
+        assert.equal(freelancer_balance_after, freelancer_balance_estimated);
+
+        current_contract_profit = price * house_edge / 100;
+        // console.log(current_contract_profit);
+    });
+
+    it ("[OK] Create order#4 and remove it by moder and partially satisfy in favor of the freelancer", async () => {
+        // 1. Create order from account#3
+        // 2. Set freelancer: account#4 
+        // 3. Remove order by moder account#1 with 25% return for the owner
+        // 4. Check balance of freelancer (it should be bigger)
+        let math_round = 1000000;
+        let freelancer_balance_before = await web3.eth.getBalance(accounts[4]).toNumber() / math_round;
+        
+        let math_price = price  / math_round;
+        let percent = 25;
+        let to_owner = math_price * percent / 100;
+        let rest = math_price - to_owner;
+        let contract_profit = rest * house_edge / 100;
+        let to_freelancer = rest - contract_profit;
+
+        // console.log(math_price);
+        // console.log(to_owner);
+        // console.log(rest);
+        // console.log(contract_profit);
+        // console.log(to_freelancer);
+
+        let freelancer_balance_estimated = Math.round(freelancer_balance_before + to_freelancer);
+
+        await dappWork.createOrder(order02_title, order02_email, order02_contact,
+            text_hash, file_hash, {from: accounts[3], value: price});
+
+        let order_id = await dappWork.lastOrderId.call();
+
+        await dappWork.setOrderFreelancer(order_id, accounts[4], {from: accounts[3]});
+        await dappWork.moderRemoveOrder(order_id, percent, {from: accounts[1]});
+        
+        current_contract_profit += contract_profit * math_round;
+        let freelancer_balance_after = Math.round(await web3.eth.getBalance(accounts[4]).toNumber() / math_round);
+
+        // console.log(freelancer_balance_before);
+        // console.log(freelancer_balance_estimated);
+        // console.log(freelancer_balance_after);
+        
+        assert.equal(order_id, 4);
+        assert.equal(freelancer_balance_after, freelancer_balance_estimated);
+
+        // console.log(current_contract_profit);
+    });
+
+    it("[REVERT] Withdraw contract profit by 'moder' and 'unknown' accounts", async () => {
+        assert.ok(await hasReverted(
+            dappWork.withdrawContractProfit(current_contract_profit, {from: accounts[1]})
+        ));
+        assert.ok(await hasReverted(
+            dappWork.withdrawContractProfit(current_contract_profit, {from: accounts[4]})
+        ));
+    });
+
+    it("[OK] Check and withdraw contract profit by 'owner' account", async () => {
+
+        let current_profit = await dappWork.contractProfit.call();
+        // console.log(current_profit);
+        // console.log(current_contract_profit);
+        assert.equal(current_profit, current_contract_profit);
+
+        let owner_balance_before = await web3.eth.getBalance(accounts[0]).toNumber();
+        await dappWork.withdrawContractProfit(current_contract_profit, {from: accounts[0]});
+        let owner_balance_after = await web3.eth.getBalance(accounts[0]).toNumber();
+        
+        assert(owner_balance_after > owner_balance_before);  
+        
+        current_profit = await dappWork.contractProfit.call();
+        assert.equal(current_profit, 0);
+    });
+
+    it ("[OK] Create order#5, set freelancer, unlock by 'moder', remove by 'owner'", async () => {
+        // 1. Create order from account#5
+        // 2. Set freelancer: account#4 
+        // 3. Unlock (modify with passing unlock parameters) it by moder
+        // 4. Remove it by owner after unlocking
+
+        await dappWork.createOrder(order02_title, order02_email, order02_contact,
+            text_hash, file_hash, {from: accounts[5], value: price});
+
+        let order_id = await dappWork.lastOrderId.call();
+
+        await dappWork.setOrderFreelancer(order_id, accounts[4], {from: accounts[5]});
+
+        assert.equal(await dappWork.isMyselfApprovedForOrder(order_id, {from: accounts[4]}), true);
+
+        let [o5_id, o5_owner_addr, o5_freelancer_addr, 
+            o5_title, o5_email, o5_contact,
+            o5_budget, o5_ipfs_text, o5_ipfs_file,
+            o5_lock] = await dappWork.getOrderById(order_id);
+
+        await dappWork.moderModifyOrder(o5_id, o5_title, o5_email, o5_contact,
+            o5_ipfs_text, o5_ipfs_file, false, false, {from: accounts[1]});
+
+        assert.equal(await dappWork.isMyselfApprovedForOrder(order_id, {from: accounts[4]}), false);
+
+        await dappWork.removeOrder(o5_id, {from: accounts[5]});
+
+        assert.equal(await dappWork.getOrdersCount(), 0);
     });
 });

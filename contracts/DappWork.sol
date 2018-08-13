@@ -9,8 +9,9 @@ contract DappWork is Ownable
     
     uint public constant minBudget = 0.01 ether;
     uint public houseEdge;
+    uint public contractProfit;
     
-    mapping(address => bool) moders;
+    mapping(address => bool) public moders;
     
     struct Order {
         uint id;
@@ -20,8 +21,8 @@ contract DappWork is Ownable
         bytes32 contactEmail;
         bytes32 contactAdditional;
         uint budget;
-        uint ipfsTextDescription;
-        uint ipfsDetailesFile;
+        string ipfsTextDescription;
+        string ipfsDetailsFile;
         bool ownerLock;
         bool freelancerLock;
     }
@@ -73,6 +74,8 @@ contract DappWork is Ownable
     }
     mapping(address => FreelancerInfo) freelancerInfoMap;
     
+    event LogModerAdded(address moder);
+    event LogModerRemoved(address moder);
     event LogOrderCreated(uint oId, address owner);
     event LogOrderModified(uint oId);
     event LogOrderRemoved(uint oId);
@@ -97,7 +100,7 @@ contract DappWork is Ownable
         require(ordersList[ordersInfo[_id].index].owner == msg.sender, "Not the order owner");
         _;
     }
-    
+
     modifier onlyOrderFreelancer(uint _id) {
         require(ordersInfo[_id].exists, "Order does not exist");
         require(ordersList[ordersInfo[_id].index].freelancer == msg.sender, "Not the order freelancer");
@@ -128,48 +131,58 @@ contract DappWork is Ownable
         revert();
     }
     
+    function withdrawContractProfit(uint amount) public onlyOwner
+    {
+        require(amount <= contractProfit, "Not enough funds on contract to withdraw");
+        contractProfit = contractProfit.sub(amount);
+        msg.sender.transfer(amount);
+    }
+
     function addModer(address _moder) public onlyOwner
     {
         moders[_moder] = true;
+        emit LogModerAdded(_moder);
     }
     
     function removeModer(address _moder) public onlyOwner
     {
         moders[_moder] = false;
+        emit LogModerRemoved(_moder);
     }
     
     function getOrderById(uint _id) public view orderExists(_id) 
-        returns(uint, address, address,
-            bytes32, bytes32, bytes32, uint,
-            uint, uint)
+        returns(uint oId, address oOwner, address oFreelancer,
+            bytes32 oTitle, bytes32 oContactEmail, bytes32 oContactAdditional, 
+            uint oBudget, string oIpfsTextDescription, string oIpfsDetailsFile,
+            bool oLocked)
     {
         uint _index = ordersInfo[_id].index;
         Order storage order = ordersList[_index];
+
+        oLocked =  ordersList[_index].ownerLock || ordersList[_index].freelancerLock;
         
         return (order.id, order.owner, order.freelancer, 
-            order.title, order.contactEmail, order.contactAdditional, order.budget, 
-            order.ipfsTextDescription, order.ipfsDetailesFile);
+            order.title, order.contactEmail, order.contactAdditional, 
+            order.budget, order.ipfsTextDescription, order.ipfsDetailsFile,
+            oLocked);
     }
     
-    function isOrderLocked(uint _id) public view orderExists(_id)
-        returns(bool)
+    function getOrdersCount() public view returns(uint)
     {
-        uint _index = ordersInfo[_id].index;
-        bool _ownerLock = ordersList[_index].ownerLock;
-        bool _freelancerLock = ordersList[_index].freelancerLock;
-        return _ownerLock || _freelancerLock;
+        return ordersList.length;
     }
-    
-    function createOrder(bytes32 _title, bytes32 _contactEmail, bytes32 _contactAdditional, uint _ipfsTextDescription, uint _ipfsDetailesFile)
-        public payable returns(uint orderId)
+
+    function createOrder(bytes32 _title, bytes32 _contactEmail, bytes32 _contactAdditional,
+                         string _ipfsTextDescription, string _ipfsDetailsFile)
+        public payable
     {
         require(msg.value >= minBudget, "Minimal budget is not fulfilled");
 
-        orderId = lastOrderId.add(1);
-        lastOrderId = orderId;
-        
+        uint order_id = lastOrderId.add(1);
+        lastOrderId = order_id;
+
         Order memory order = Order(
-            orderId,
+            order_id,
             msg.sender,
             address(0),
             _title,
@@ -177,46 +190,24 @@ contract DappWork is Ownable
             _contactAdditional,
             msg.value,
             _ipfsTextDescription,
-            _ipfsDetailesFile,
+            _ipfsDetailsFile,
             false,
             false
         );
         
         uint _index = ordersList.push(order) - 1;
-        ordersInfo[orderId].exists = true;
-        ordersInfo[orderId].index = _index;
-        ordersByOwner[msg.sender].push(orderId);
+        ordersInfo[order_id].exists = true;
+        ordersInfo[order_id].index = _index;
+        ordersByOwner[msg.sender].push(order_id);
         
-        emit LogOrderCreated(orderId, msg.sender);
-        
-        return orderId;
+        emit LogOrderCreated(order_id, msg.sender);
     }
     
-    function removeOrder(uint _id) public onlyOrderOwner(_id) orderNotLocked(_id) returns(bool)
+    function removeOrder(uint _id) public onlyOrderOwner(_id) orderNotLocked(_id)
     {
         (uint budget, ,) = _removeOrder(_id);
         msg.sender.transfer(budget);
         emit LogOrderRemoved(_id);
-        return true;
-    }
-    
-    function removeOrderModer(uint _id, uint _percentProportionToOwner) public onlyModers orderExists(_id) returns(bool)
-    {
-        require(_percentProportionToOwner >= 0 && _percentProportionToOwner <= 100, "Percent proportion should be between 0-100");
-
-        (uint budget, address _owner, address _freelancer) = _removeOrder(_id);
-        uint to_owner = budget.mul(_percentProportionToOwner.div(100));  // budget * (_percentProportionToOwner / 100)
-        _owner.transfer(to_owner);
-        
-        if (_percentProportionToOwner < 100)
-        {
-            require(_freelancer != address(0), "Can't send coins to 0x0 address");
-            uint to_freelancer = budget.sub(to_owner).mul(100 - houseEdge).div(100);  // (budget - to_owner) * (100 - houseEdge) / 100)
-            _freelancer.transfer(to_freelancer);
-        }
-        
-        emit LogOrderRemoved(_id);
-        return true;
     }
     
     function _removeOrder(uint _id) private returns(uint _budget, address _owner, address _freelancer)
@@ -241,10 +232,12 @@ contract DappWork is Ownable
         return (_budget, _owner, _freelancer);
     }
     
-    function modifyOrder(uint _id, bytes32 _title, bytes32 _contactEmail, bytes32 _contactAdditional, uint _ipfsTextDescription, uint _ipfsDetailesFile)
-        public payable onlyOrderOwner(_id) orderNotLocked(_id) returns(bool)
+    function modifyOrder(uint _id, bytes32 _title, bytes32 _contactEmail, bytes32 _contactAdditional,
+            string _ipfsTextDescription, string _ipfsDetailsFile)
+        public payable onlyOrderOwner(_id) orderNotLocked(_id)
     {
-        uint _index = _modifyOrder(_id, _title, _contactEmail, _contactAdditional, _ipfsTextDescription, _ipfsDetailesFile);
+        uint _index = _modifyOrder(_id, _title, _contactEmail, _contactAdditional,
+            _ipfsTextDescription, _ipfsDetailsFile);
         if (msg.value > minBudget)
         {
             uint new_budget = msg.value;
@@ -253,22 +246,10 @@ contract DappWork is Ownable
             msg.sender.transfer(old_budget);
         }
         emit LogOrderModified(_id);
-        return true;
     }
-    
-    function modifyOrderModer(uint _id, bytes32 _title, bytes32 _contactEmail, bytes32 _contactAdditional, 
-            uint _ipfsTextDescription, uint _ipfsDetailesFile, 
-            bool _ownerLock, bool _freelancerLock)
-        public onlyModers orderExists(_id) returns(bool)
-    {
-        uint _index = _modifyOrder(_id, _title, _contactEmail, _contactAdditional, _ipfsTextDescription, _ipfsDetailesFile);
-        ordersList[_index].ownerLock = _ownerLock;
-        ordersList[_index].freelancerLock = _freelancerLock;
-        emit LogOrderModified(_id);
-        return true;
-    }
-    
-    function _modifyOrder(uint _id, bytes32 _title, bytes32 _contactEmail, bytes32 _contactAdditional, uint _ipfsTextDescription, uint _ipfsDetailesFile)
+
+    function _modifyOrder(uint _id, bytes32 _title, bytes32 _contactEmail, bytes32 _contactAdditional,
+            string _ipfsTextDescription, string _ipfsDetailsFile)
         private returns(uint)
     {
         uint _index = ordersInfo[_id].index;
@@ -277,12 +258,12 @@ contract DappWork is Ownable
         ordersList[_index].contactEmail = _contactEmail;
         ordersList[_index].contactAdditional = _contactAdditional;
         ordersList[_index].ipfsTextDescription = _ipfsTextDescription;
-        ordersList[_index].ipfsDetailesFile = _ipfsDetailesFile;
+        ordersList[_index].ipfsDetailsFile = _ipfsDetailsFile;
         
         return _index;
     }
-    
-    function setOrderFreelancer(uint _id, address _freelancer) public onlyOrderOwner(_id) orderNotLocked(_id) returns(bool)
+
+    function setOrderFreelancer(uint _id, address _freelancer) public onlyOrderOwner(_id) orderNotLocked(_id)
     {
         uint _index = ordersInfo[_id].index;
 
@@ -293,7 +274,6 @@ contract DappWork is Ownable
         ordersList[_index].freelancerLock = true;
         
         emit LogOrderFreelancerAdded(_id, _freelancer);
-        return true;
     }
     
     function isMyselfApprovedForOrder(uint _id) public view returns(bool)
@@ -304,7 +284,9 @@ contract DappWork is Ownable
     function isAddressApprovedForOrder(uint _id, address _freelancer) public view orderExists(_id) returns(bool)
     {
         uint _index = ordersInfo[_id].index;
-        if (_freelancer == ordersList[_index].freelancer)
+        if (_freelancer == ordersList[_index].freelancer
+            && ordersList[_index].freelancerLock
+            && ordersList[_index].ownerLock)
         {
             return true;
         }
@@ -314,26 +296,57 @@ contract DappWork is Ownable
         }
     }
     
-    function unlockOrderByOwner(uint _id) public onlyOrderOwner(_id) returns(bool)
+    function unlockOrderOwner(uint _id) public onlyOrderOwner(_id)
     {
         uint _index = ordersInfo[_id].index;
         ordersList[_index].ownerLock = false;
-        return true;
     }
     
-    function unlockOrderByFreelancer(uint _id) public onlyOrderFreelancer(_id) returns(bool)
+    function unlockOrderFreelancer(uint _id) public onlyOrderFreelancer(_id)
     {
         uint _index = ordersInfo[_id].index;
         ordersList[_index].freelancerLock = false;
-        return true;
     }
     
-    function completeOrder(uint _id) public onlyOrderOwner(_id) returns(bool)
+    function completeOrder(uint _id) public onlyOrderOwner(_id)
     {
         (uint _budget, , address _freelancer) = _removeOrder(_id);
         require(_freelancer != address(0), "Can't send coins to 0x0 address");
-        uint to_freelancer = _budget.mul(100 - houseEdge).div(100);  // budget * (100 - houseEdge) / 100)
+        uint contract_profit = _budget.mul(houseEdge).div(100); // budget * houseEdge / 100
+        uint to_freelancer = _budget.sub(contract_profit);  // budget - contract_profit
+        contractProfit = contractProfit.add(contract_profit);
         _freelancer.transfer(to_freelancer);
-        return true;
+    }
+
+    function moderRemoveOrder(uint _id, uint _percentProportionToOwner) public onlyModers orderExists(_id)
+    {
+        require(_percentProportionToOwner >= 0 && _percentProportionToOwner <= 100, "Percent proportion should be between 0-100");
+
+        (uint budget, address _owner, address _freelancer) = _removeOrder(_id);
+        uint to_owner = budget.mul(_percentProportionToOwner).div(100);  // budget * (_percentProportionToOwner / 100)
+        _owner.transfer(to_owner);
+        
+        if (_percentProportionToOwner < 100)
+        {
+            require(_freelancer != address(0), "Can't send coins to 0x0 address");
+            uint rest_budget = budget.sub(to_owner);
+            uint contract_profit = rest_budget.mul(houseEdge).div(100);
+            uint to_freelancer = rest_budget.sub(contract_profit);
+            contractProfit = contractProfit.add(contract_profit);
+            _freelancer.transfer(to_freelancer);
+        }
+        
+        emit LogOrderRemoved(_id);
+    }
+    
+    function moderModifyOrder(uint _id, bytes32 _title, bytes32 _contactEmail, bytes32 _contactAdditional, 
+            string _ipfsTextDescription, string _ipfsDetailsFile, bool _ownerLock, bool _freelancerLock)
+        public onlyModers orderExists(_id)
+    {
+        uint _index = _modifyOrder(_id, _title, _contactEmail, _contactAdditional,
+            _ipfsTextDescription, _ipfsDetailsFile);
+        ordersList[_index].ownerLock = _ownerLock;
+        ordersList[_index].freelancerLock = _freelancerLock;
+        emit LogOrderModified(_id);
     }
 }
