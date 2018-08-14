@@ -1,9 +1,9 @@
 pragma solidity ^0.4.24;
 
-import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
-contract DappWork is Ownable
+contract DappWork is Pausable
 {
     using SafeMath for uint;
     
@@ -95,7 +95,7 @@ contract DappWork is Ownable
     
     function() public payable 
     {
-        revert();
+        revert("No plain funds transfer allowed");
     }
     
     function withdrawContractProfit(uint amount) public onlyOwner
@@ -150,7 +150,7 @@ contract DappWork is Ownable
     function createOrder(bytes32 _title, 
                          bytes32 _ownerContactEmail, bytes32 _ownerContactAdditional,
                          string _ipfsTextDescription, string _ipfsDetailsFile)
-        public payable
+        public payable whenNotPaused
     {
         require(msg.value >= minBudget, "Minimal budget is not fulfilled");
         require(_ownerContactEmail[0] != 0, "E-mail is required");
@@ -187,7 +187,7 @@ contract DappWork is Ownable
             _ipfsTextDescription, _ipfsDetailsFile);
     }
     
-    function removeOrder(uint _id) public onlyOrderOwner(_id) orderNotLocked(_id)
+    function removeOrder(uint _id) public onlyOrderOwner(_id) orderNotLocked(_id) whenNotPaused
     {
         (uint budget, ,) = _removeOrder(_id);
         msg.sender.transfer(budget);
@@ -243,10 +243,11 @@ contract DappWork is Ownable
     function modifyOrder(uint _id, bytes32 _title, 
             bytes32 _ownerContactEmail, bytes32 _ownerContactAdditional,
             string _ipfsTextDescription, string _ipfsDetailsFile)
-        public payable onlyOrderOwner(_id) orderNotLocked(_id)
+        public payable onlyOrderOwner(_id) orderNotLocked(_id) whenNotPaused
     {
         uint _index = _modifyOrder(_id, _title, _ownerContactEmail, _ownerContactAdditional,
             _ipfsTextDescription, _ipfsDetailsFile);
+
         if (msg.value > minBudget)
         {
             uint new_budget = msg.value;
@@ -254,10 +255,11 @@ contract DappWork is Ownable
             ordersList[_index].budget = new_budget;
             msg.sender.transfer(old_budget);
         }
-        else
+        else if (msg.value > 0)
         {
             msg.sender.transfer(msg.value);
         }
+
         emit LogOrderModified(_id, msg.sender,
             _title, _ownerContactEmail, _ownerContactAdditional,
             ordersList[_index].budget, _ipfsTextDescription, _ipfsDetailsFile,
@@ -272,8 +274,10 @@ contract DappWork is Ownable
     {
         uint _index = _modifyOrder(_id, _title, _ownerContactEmail, _ownerContactAdditional,
             _ipfsTextDescription, _ipfsDetailsFile);
+
         ordersList[_index].ownerLock = _ownerLock;
         ordersList[_index].freelancerLock = _freelancerLock;
+
         emit LogOrderModified(_id, msg.sender,
             _title, _ownerContactEmail, _ownerContactAdditional,
             ordersList[_index].budget, _ipfsTextDescription, _ipfsDetailsFile,
@@ -297,7 +301,7 @@ contract DappWork is Ownable
     }
 
     function setOrderFreelancer(uint _id, address _freelancer, bytes32 _freelancerContactEmail) 
-        public onlyOrderOwner(_id) orderNotLocked(_id)
+        public onlyOrderOwner(_id) orderNotLocked(_id) whenNotPaused
     {
         require(_freelancer != address(0), "Can't add 0x0 address as freelancer");
         require(_freelancerContactEmail[0] != 0, "Freelancer e-mail is required");
@@ -349,7 +353,7 @@ contract DappWork is Ownable
         }    
     }
     
-    function unlockOrderOwner(uint _id) public onlyOrderOwner(_id)
+    function unlockOrderOwner(uint _id) public onlyOrderOwner(_id) whenNotPaused
     {
         uint _index = ordersListIndex[_id].index;
         ordersList[_index].ownerLock = false;
@@ -357,7 +361,7 @@ contract DappWork is Ownable
         emit LogOrderUnlockedByOwner(_id);
     }
     
-    function unlockOrderFreelancer(uint _id) public onlyOrderFreelancer(_id)
+    function unlockOrderFreelancer(uint _id) public onlyOrderFreelancer(_id) whenNotPaused
     {
         uint _index = ordersListIndex[_id].index;
         ordersList[_index].freelancerLock = false;
@@ -365,7 +369,7 @@ contract DappWork is Ownable
         emit LogOrderUnlockedByFreelancer(_id);
     }
     
-    function completeOrder(uint _id) public onlyOrderOwner(_id)
+    function completeOrder(uint _id) public onlyOrderOwner(_id) whenNotPaused
     {
         (uint _budget, , address _freelancer) = _removeOrder(_id);
         require(_freelancer != address(0), "Can't send coins to 0x0 address");

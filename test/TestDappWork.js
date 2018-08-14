@@ -11,9 +11,14 @@ async function hasReverted(contractCall) {
 
 contract('DappWork', accounts => {
     let dappWork;
-  
-    beforeEach(async () => {
-      dappWork = await DappWork.deployed();
+    const house_edge = 1;
+
+    // beforeEach(async () => {
+    //   dappWork = await DappWork.deployed();
+    // });
+
+    before(async () => {
+        dappWork = await DappWork.new(house_edge, {from: accounts[0]});
     });
 
     it("[OK] Check the 'owner' accounts#0)", async () => {
@@ -58,7 +63,6 @@ contract('DappWork', accounts => {
         ));
     });
 
-    const house_edge = 1;
     const zero_address = "0x0000000000000000000000000000000000000000";
 
     const order01_title = "Blockchain developer needed";
