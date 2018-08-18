@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
-import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
-import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "../app/node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
+import "../app/node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 contract DappWork is Pausable
 {
