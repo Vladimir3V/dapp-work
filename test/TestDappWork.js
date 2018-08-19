@@ -132,7 +132,7 @@ contract('DappWork', accounts => {
         await dappWork.createOrder(order02_title, order02_email, order02_contact, 
             text_hash, file_hash, {from: accounts[3], value: price});
         
-        var orders_length = await dappWork.getOrdersCount();
+        let orders_length = await dappWork.getOrdersCount();
         assert.equal(orders_length, 2);
 
         let [o1_id, o1_title,
@@ -194,7 +194,7 @@ contract('DappWork', accounts => {
     it("[OK] Remove first order#1 from 'owner' account#3", async () => {
         await dappWork.removeOrder(1, {from: accounts[3]});
 
-        var orders_length = await dappWork.getOrdersCount();
+        let orders_length = await dappWork.getOrdersCount();
         assert.equal(orders_length, 1);
 
         let [o2_id, o2_title,
@@ -343,7 +343,7 @@ contract('DappWork', accounts => {
         await dappWork.unlockOrderFreelancer(2, {from: accounts[5]});
         await dappWork.removeOrder(2, {from: accounts[3]});
 
-        var orders_length = await dappWork.getOrdersCount();
+        let orders_length = await dappWork.getOrdersCount();
         assert.equal(orders_length, 0);
     });
 
