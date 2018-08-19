@@ -1,10 +1,36 @@
 <template>
   <div class='web3-info'>
-    <p v-if="isInjected" id="has-web3"><i aria-hidden="true" class="fa fa-check"></i> Web3 installed</p>
-    <p v-else id="no-web3"><i aria-hidden="true" class="fa fa-times"></i> Web3 not found</p>
-    <p>Network: {{ network }}</p>
-    <p>Account: {{ coinbase }}</p>
-    <p>Balance: {{ balance }} Ether </p>
+    <div class="mbox">
+      <nav class="level is-mobile">
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Web3</p>
+            <div class="subheading">
+              <p v-if="isInjected" id="has-web3"><i aria-hidden="true" class="fa fa-check"></i> Installed</p>
+              <p v-else id="no-web3"><i aria-hidden="true" class="fa fa-times"></i> Not found</p>
+            </div>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Network</p>
+            <p class="subheading">{{ network }}</p>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Account</p>
+            <p class="subheading">{{ coinbase }}</p>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Balance</p>
+            <p class="subheading">{{ balance }} Ether</p>
+          </div>
+        </div>
+      </nav>   
+    </div> 
   </div>
 </template>
 
@@ -16,17 +42,35 @@ export default {
   computed: mapState({
     isInjected: state => state.web3.isInjected,
     network: state => NETWORKS[state.web3.networkId],
-    coinbase: state => state.web3.coinbase,
-    balance: state => state.web3.balance
+    coinbase: state => state.web3.coinbase.slice(0, 6) + "..." + state.web3.coinbase.slice(-4),
+    balance: state => state.web3.balance.toFixed(6)
   })
 };
 </script>
 
-<style scoped>
-#has-web3 {
-  color: green;
-}
-#no-web3 {
-  color: red;
-}
+<style lang="sass" scoped>
+.mbox
+  background-color: #e6e6e6
+  border-bottom: 2px solid #91eede
+
+.level
+  margin: 0
+  padding: 0
+
+.level-item
+  margin: 0
+  padding: 0
+
+.heading
+  font-weight: bold
+
+.subheading
+  font-size: 0.9em
+
+#has-web3 
+  color: green
+
+#no-web3 
+  color: red
+
 </style>

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import DappWork from '@/components/dapp-work'
+import Home from '@/components/home'
 
 Vue.use(Router)
 
@@ -8,8 +8,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'dapp-work',
-      component: DappWork
+      name: 'home',
+      component: Home
     }
   ]
 })
