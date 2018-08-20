@@ -38,7 +38,7 @@ async function populate(dappWork, accounts) {
                 await dappWork.createOrder(order.title, order.email, order.contact, 
                     order.text_hash, order.file_hash,
                     {from: acc, value: web3.toWei(order.price, 'ether'), gas: 3000000});
-                console.log('Added order#', i + 1, " with title '" + order.title + "' owned by account#" + (i % 3 + 2), "(" + acc.slice(0, 6) + "..." + acc.slice(-4) + ")");
+                console.log('Added order #', i + 1, "owned by account #", (i % 3 + 2), "(" + acc.slice(0, 6) + "..." + acc.slice(-4) + ")", "with title '" + order.title + "'");
             }
             let orders_length = await dappWork.getOrdersCount();
             console.log('Added ', orders_length.toNumber(), ' orders to the contract')

@@ -40,10 +40,10 @@ import { mapState } from "vuex";
 export default {
   name: "hello-web3",
   computed: mapState({
-    isInjected: state => state.web3.isInjected,
-    network: state => NETWORKS[state.web3.networkId],
-    coinbase: state => state.web3.coinbase.slice(0, 6) + "..." + state.web3.coinbase.slice(-4),
-    balance: state => state.web3.balance.toFixed(6)
+    isInjected: state => state.web3State.isInjected,
+    network: state => NETWORKS[state.web3State.networkId],
+    coinbase: state => state.web3State.coinbase.slice(0, 6) + "..." + state.web3State.coinbase.slice(-4),
+    balance: state => state.web3State.balance.toFixed(6)
   })
 };
 </script>
@@ -52,14 +52,6 @@ export default {
 .mbox
   background-color: #e6e6e6
   border-bottom: 2px solid #91eede
-
-.level
-  margin: 0
-  padding: 0
-
-.level-item
-  margin: 0
-  padding: 0
 
 .heading
   font-weight: bold

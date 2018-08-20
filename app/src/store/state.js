@@ -1,12 +1,13 @@
 let state = {
-    web3: {
+    web3State: {
         isInjected: false,
-        web3Instance: null,
         networkId: -1,
         coinbase: "",
         balance: 0.0,
         error: null
     },
-    contractInstance: null
+    web3Instance: null,
+    contractInstance: null,
+    orders: {}
 }
 export default state
