@@ -8,6 +8,7 @@ let state = {
     },
     web3Instance: null,
     contractInstance: null,
-    orders: {}
+    orders: {},
+    modalOrder: null,
 }
 export default state

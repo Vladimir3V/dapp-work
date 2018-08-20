@@ -37,6 +37,10 @@ export const store = new Vuex.Store({
         renewOrders(state, payload) {
             console.log("[DEBUG] renewOrders being executed", payload)
             state.orders = payload
+        },
+        setModalOrderInfoMutation(state, payload) {
+            console.log("[DEBUG] setModalOrderMutation being executed", payload)
+            state.modalOrderInfo = payload
         }
     },
     actions: {
@@ -60,6 +64,9 @@ export const store = new Vuex.Store({
         },
         async getOrdersListAction({ commit }) {
             commit('renewOrders', await getAllOrders())
+        },
+        setModalOrderInfoAction({ commit }, payload) {
+            commit('setModalOrderInfoMutation', payload)
         }
     }
 })

@@ -1,5 +1,7 @@
 <template>
     <div class="home">
+
+      <modal-order-info v-if="showModalOrderInfo" @close="showModalOrderInfo = false"/>
       
       <div class="container">
 
@@ -11,26 +13,18 @@
       <div class="container">
         <div class="columns" v-if="orders">
           <div class="column is-one-third" v-for="order in orders" v-bind:key="order.id" >
-            <div class="card">
+            <div class="card" @click="setNshowModalOrderInfo(order)">
+              <div class="card-header">
+                <div class="card-header-title">
+                  <p class="title is-5">{{ order.title }}</p>
+                </div>
+              </div>
               <div class="card-content">
-                <p class="title is-4">{{ order.title }}</p>
-                <p class="subtitle is-6"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
-                <p class="subtitle is-6"> <b>Budget: </b> {{ order.budget }} Ether</p>
-                <!-- <table class="table is-bordered is-fullwidth is-narrow">
-                  <thead>
-                    <th colspan="2"><p class="has-text-centered">Contact information</p></th>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th>Email:</th>
-                      <td> {{ order.owner_email}} </td>
-                    </tr>
-                    <tr>
-                      <th>Additional:</th>
-                      <td> {{ order.owner_contact }} </td>
-                    </tr>
-                  </tbody>
-                </table> -->
+                <p class="content"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
+              </div>
+              <div class="card-footer">
+                <p class="card-footer-item"><b>Budget:</b></p>
+                <p class="card-footer-item">{{ order.budget }} Ether</p>
               </div>
             </div>
           </div>
@@ -41,13 +35,28 @@
 </template>
 
 <script>
+import ModalOrderInfo from "@/components/modal-order-info"
 import { mapState } from "vuex";
-
 export default {
   name: "home",
+  components: {
+    "modal-order-info": ModalOrderInfo,
+  },
+  data() {
+    return {
+      showModalOrderInfo: false
+    }
+  },
   computed: mapState({
     orders: state => state.orders
-  })
+  }),
+  methods: {
+    setNshowModalOrderInfo: function(order) {
+      console.log("[DEBUG] Showing order #", order.id, "in modal window")
+      this.$store.dispatch("setModalOrderInfoAction", order)
+      this.showModalOrderInfo = true
+    }
+  }
 };
 </script>
 
