@@ -73,7 +73,7 @@ contract('DappWork', accounts => {
     const order02_email = "cool_guy@yahoo.com";
     const order02_contact = "telegram: @c00l_guy";
 
-    const text_hash = "QmWWQSuPMS6aXCbZKpEjPHPUZN2NjB3YrhJTHsV4X3vb2t";
+    const text_hash = "QmRKN4vhtxbS3qURZBhpD35eaQ81bmhqoJ3Su2Y2ahN6gn";
     const file_hash = "QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG";
 
     const freelancer_contact = "freelance_do@gmail.com";

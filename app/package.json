@@ -20,8 +20,10 @@
     "populate": "node scripts/populate.js"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "bulma": "^0.7.1",
     "font-awesome": "^4.7.0",
+    "ipfs-api": "^24.0.1",
     "openzeppelin-solidity": "1.12.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",

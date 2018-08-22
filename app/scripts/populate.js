@@ -1,13 +1,14 @@
 const Web3 = require('web3');
+const ipfsApi = require('ipfs-api');
 const contract = require('truffle-contract');
 const contractData = require('../../build/contracts/DappWork.json');
 const sampleData = require('../sample-data.json');
 
-const ethRPC = "http://localhost:8545";
-
-let web3 = new Web3(new Web3.providers.HttpProvider(ethRPC));
+let web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 const DappWork = contract(contractData);
 DappWork.setProvider(web3.currentProvider);
+
+const ipfs = new ipfsApi("localhost", 5001, {protocol: 'http'});
 
 web3.eth.getAccounts((error, accounts) => {
     if (error) {
@@ -38,10 +39,10 @@ async function populate(dappWork, accounts) {
                 await dappWork.createOrder(order.title, order.email, order.contact, 
                     order.text_hash, order.file_hash,
                     {from: acc, value: web3.toWei(order.price, 'ether'), gas: 3000000});
-                console.log('Added order #', i + 1, "owned by account #", (i % 3 + 2), "(" + acc.slice(0, 6) + "..." + acc.slice(-4) + ")", "with title '" + order.title + "'");
+                console.log("Added order <> Owned by account #", (i % 3 + 2), "(" + acc.slice(0, 6) + "..." + acc.slice(-4) + ")", "with title '" + order.title + "'");
             }
             let orders_length = await dappWork.getOrdersCount();
-            console.log('Added ', orders_length.toNumber(), ' orders to the contract')
+            console.log('Right now there are', orders_length.toNumber(), 'orders in the contract')
         }
     } catch (e) {
         if (/revert/.test(e.message)) {

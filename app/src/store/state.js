@@ -7,8 +7,8 @@ let state = {
         error: null
     },
     web3Instance: null,
+    ipfsInstance: null,
     contractInstance: null,
-    orders: {},
-    modalOrderInfo: null,
+    orders: {}
 }
 export default state

@@ -1,5 +1,6 @@
 <template>
   <div id="navigation-bar">
+    <modal-order-create v-if="showModalOrderCreate" @close="showModalOrderCreate = false"/>
     <div class="navbar has-shadow">
       <div class="container">
         <div class="navbar-brand">
@@ -20,7 +21,7 @@
 
           <div class="navbar-item">
             <p class="control">
-              <a class="button is-primary is-outlined">
+              <a class="button is-primary is-outlined" @click="showModalOrderCreate = true">
                 <span class="icon">
                   <i class="fa fa-plus-circle"></i>
                 </span>
@@ -37,17 +38,23 @@
 </template>
 
 <script>
+import ModalOrderCreate from "@/components/modal-order-create";
+import { mapState } from "vuex";
 export default {
   name: "nav-bar",
+  components: {
+    "modal-order-create": ModalOrderCreate
+  },
   data() {
-      return {
-        isActive: false
-      };
+    return {
+      isActive: false,
+      showModalOrderCreate: false
+    };
   },
   methods: {
-      toggleNav() {
-          this.isActive = !this.isActive;
-      }
+    toggleNav() {
+      this.isActive = !this.isActive;
+    },
   }
 };
 </script>

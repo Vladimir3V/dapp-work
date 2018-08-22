@@ -1,8 +1,6 @@
 <template>
     <div class="home">
 
-      <modal-order-info v-if="showModalOrderInfo" @close="showModalOrderInfo = false"/>
-      
       <div class="container">
 
         <h1 class="title">Orders</h1>
@@ -12,22 +10,8 @@
 
       <div class="container">
         <div class="columns" v-if="orders">
-          <div class="column is-one-third" v-for="order in orders" v-bind:key="order.id" >
-            <div class="card" @click="setNshowModalOrderInfo(order)">
-              <div class="card-header">
-                <div class="card-header-title">
-                  <p class="title is-5">{{ order.title }}</p>
-                </div>
-              </div>
-              <div class="card-content">
-                <p class="content"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
-              </div>
-              <div class="card-footer">
-                <p class="card-footer-item"><b>Budget:</b></p>
-                <p class="card-footer-item">{{ order.budget }} Ether</p>
-              </div>
-            </div>
-          </div>
+            <home-order-card v-for="order in orderedOrders" v-bind:key="order.id"
+              v-bind:orderData="order"></home-order-card>
         </div>
       </div>
 
@@ -35,28 +19,18 @@
 </template>
 
 <script>
-import ModalOrderInfo from "@/components/modal-order-info"
+import HomeOrderCard from "@/components/home-order-card";
 import { mapState } from "vuex";
 export default {
   name: "home",
   components: {
-    "modal-order-info": ModalOrderInfo,
-  },
-  data() {
-    return {
-      showModalOrderInfo: false
-    }
+    "home-order-card": HomeOrderCard
   },
   computed: mapState({
-    orders: state => state.orders
+    orders: state => state.orders,
+    orderedOrders: state => _.orderBy(state.orders, 'id', 'desc')
   }),
-  methods: {
-    setNshowModalOrderInfo: function(order) {
-      console.log("[DEBUG] Showing order #", order.id, "in modal window")
-      this.$store.dispatch("setModalOrderInfoAction", order)
-      this.showModalOrderInfo = true
-    }
-  }
+  methods: {}
 };
 </script>
 

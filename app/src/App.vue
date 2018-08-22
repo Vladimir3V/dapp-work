@@ -17,8 +17,9 @@ export default {
     "nav-bar": NavBar
   },
   beforeCreate() {
-    console.log("[DEBUG] registerWeb3Action dispatched from App.vue");
-    this.$store.dispatch("registerWeb3Action");
+    console.log("[DEBUG] registerWeb3Action & registerIpfsAction dispatched from App.vue")
+    this.$store.dispatch("registerWeb3Action")
+    this.$store.dispatch("registerIpfsAction")
   },
   computed: mapState({
     web3Instance: state => state.web3Instance,

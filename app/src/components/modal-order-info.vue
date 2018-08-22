@@ -10,7 +10,7 @@ is-offset-1-mobile">
                 <div class="card">
                   <header class="card-header">
                     <div class="card-header-title">
-                      <p class="title is-5">{{ order.title }}</p>
+                      <p class="title is-5">{{ title }}</p>
                     </div>
                     <a class="card-header-icon" @click="$emit('close')">
                       <span class="icon" >
@@ -23,22 +23,20 @@ is-offset-1-mobile">
                       <table class="table is-fullwidth is-narrow is-bordered">
                         <tr>
                           <th>E-mail:</th>
-                          <td><a :href="`mailto:${order.owner_email}`">{{ order.owner_email }}</a></td>
+                          <td><a :href="`mailto:${owner_email}`">{{ owner_email }}</a></td>
                         </tr>
                         <tr>
                           <th>Additional:</th>
-                          <td>{{ order.owner_contact }}</td>
+                          <td>{{ owner_contact }}</td>
                         </tr>
                       </table>
-                      <p>
-                        {{ order.text_hash }}
-                      </p>
-                      <p><b>Additional information:</b>&emsp;<a :href="`${order.file_hash}`">{{order.file_hash}}</a></p>
+                      <p class="content">{{ text }}</p>
+                      <p><b>Additional information:</b>&emsp;<a :href="`https://ipfs.io/ipfs/${file_hash}`" target="_blank">{{ file_hash }}</a></p>
                     </div>
                   </div>
                   <div class="card-footer">
-                    <p class="card-footer-item"><b>Budget:</b></p>
-                    <p class="card-footer-item">{{ order.budget }} Ether</p>
+                <p class="card-footer-item"><b>Budget:</b>&emsp;{{ budget }} Ether</p>
+                <p class="card-footer-item"><b>Order id:</b>&emsp;{{ id }}</p>
                   </div>
                 </div>
 
@@ -51,12 +49,61 @@ is-offset-1-mobile">
 </template>
 
 <script>
+import axious from "axios";
 import { mapState } from "vuex";
 export default {
   name: "modal-order-info",
-  computed: mapState({
-    order: state => state.modalOrderInfo
-  })
+  props: {
+    orderData: {
+      type: Object,
+      required: true
+    }
+  },
+  data() {
+    return {
+      id: null,
+      title: null,
+      owner_email: null,
+      owner_contact: null,
+      text: null,
+      file_hash: null,
+      budget: null,
+      order: null,
+      showModalOrderInfo: false
+    };
+  },
+  mounted: function() {
+    this.setData(this.orderData);
+  },
+  watch: {
+    orderData: function(newValue, oldValue) {
+      this.setData(newValue);
+    }
+  },
+  methods: {
+    setData: function(value) {
+      this.id = value.id;
+      this.title = value.title;
+      this.owner_email = value.owner_email;
+      this.owner_contact = value.owner_contact;
+      this.getTextFromIpfs(value.text_hash);
+      this.file_hash = value.file_hash;
+      this.budget = value.budget;
+      this.order = value;
+    },
+    getTextFromIpfs: async function(ipfs_hash) {
+      let url = "https://ipfs.io/ipfs/" + ipfs_hash;
+      axious
+        .get(url)
+        .then(res => {
+          // console.log("[DEBUG] Got response from IPFS:", res);
+          this.text = res.data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  }
 };
 </script>
 
@@ -67,6 +114,9 @@ export default {
   color: #1EC9AC
   &:hover
     color: black
+
+.content
+    white-space: pre-wrap
 
 .modal-mask 
   position: fixed

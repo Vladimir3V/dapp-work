@@ -2,9 +2,10 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import state from './state'
 import getWeb3 from '../utils/getWeb3'
+import ipfs from '../utils/getIPFS'
 import pollWeb3 from '../utils/pollWeb3'
 import getContract from '../utils/getTruffleContract'
-import { getAllOrders } from '../utils/contractHelpers'
+import { getAllOrders, createOrder } from '../utils/contractHelpers'
 
 Vue.use(Vuex)
 
@@ -30,6 +31,10 @@ export const store = new Vuex.Store({
             state.web3State.coinbase = payload.coinbase
             state.web3State.balance = parseFloat(payload.balance)
         },
+        registerIpfsMutation(state, payload) {
+            console.log('[DEBUG] registerIpfsMutation being executed', payload)
+            state.ipfsInstance = payload
+        },
         registerContractMutation(state, payload) {
             console.log("[DEBUG] registerContractMutation being executed", payload)
             state.contractInstance = () => payload            
@@ -37,17 +42,13 @@ export const store = new Vuex.Store({
         renewOrders(state, payload) {
             console.log("[DEBUG] renewOrders being executed", payload)
             state.orders = payload
-        },
-        setModalOrderInfoMutation(state, payload) {
-            console.log("[DEBUG] setModalOrderMutation being executed", payload)
-            state.modalOrderInfo = payload
         }
     },
     actions: {
         registerWeb3Action({ commit }) {
             console.log('[DEBUG] registerWeb3Action being executed')
             getWeb3.then(result => {
-                console.log('[DEBUG] committing result to registerWeb3Mutation mutation')
+                console.log('[DEBUG] committing result to registerWeb3Mutation:', result)
                 commit('registerWeb3Mutation', result)
             }).catch(e => {
                 console.log('[DEBUG] error in action registerWeb3Action', e)
@@ -57,6 +58,14 @@ export const store = new Vuex.Store({
             console.log('[DEBUG] pollWeb3Action being executed')
             commit('pollWeb3Mutation', payload)
         },
+        registerIpfsAction({ commit }) {
+            console.log('[DEBUG] registerIpfsAction being executed')
+            ipfs.id(function(err, res) {
+                if (!err) console.log("Connected to IPFS node!", res.id, res.agentVersion, res.protocolVersion);
+                else console.log("IPFS connection error:", err)
+            });
+            commit('registerIpfsMutation', ipfs)
+        },
         getContractAction({ commit }) {
             getContract.then(result => {
                 commit('registerContractMutation', result)
@@ -65,8 +74,8 @@ export const store = new Vuex.Store({
         async getOrdersListAction({ commit }) {
             commit('renewOrders', await getAllOrders())
         },
-        setModalOrderInfoAction({ commit }, payload) {
-            commit('setModalOrderInfoMutation', payload)
+        async createOrderAction({commit}, payload) {
+            await createOrder(payload)
         }
     }
 })
