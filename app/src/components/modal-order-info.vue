@@ -31,7 +31,7 @@ is-offset-1-mobile">
                         </tr>
                       </table>
                       <p class="content">{{ text }}</p>
-                      <p><b>Additional information:</b>&emsp;<a :href="`https://ipfs.io/ipfs/${file_hash}`" target="_blank">{{ file_hash }}</a></p>
+                      <p><b>Additional information:</b>&emsp;<a v-if="file_hash" :href="`https://ipfs.io/ipfs/${file_hash}`" target="_blank">{{ file_hash }}</a></p>
                     </div>
                   </div>
                   <div class="card-footer">

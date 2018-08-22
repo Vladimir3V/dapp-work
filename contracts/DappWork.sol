@@ -141,6 +141,19 @@ contract DappWork is Pausable
                 order.ipfsTextDescription, order.ipfsDetailsFile, 
                 lock);
     }
+
+    function getOrderLockInfo(uint _id) public view orderExists(_id)
+        returns(bool ownerLock, bool freelancerLock)
+    {
+        uint _index = ordersListIndex[_id].index;
+        return (ordersList[_index].ownerLock, ordersList[_index].freelancerLock);
+    }
+
+    function getOrderIndex(uint _id) public view orderExists(_id)
+        returns(uint index)
+    {
+        return ordersListIndex[_id].index;       
+    }
     
     function getOrdersCount() public view returns(uint)
     {

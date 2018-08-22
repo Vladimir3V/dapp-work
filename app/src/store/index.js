@@ -5,7 +5,7 @@ import getWeb3 from '../utils/getWeb3'
 import ipfs from '../utils/getIPFS'
 import pollWeb3 from '../utils/pollWeb3'
 import getContract from '../utils/getTruffleContract'
-import { getAllOrders, createOrder } from '../utils/contractHelpers'
+import { getAllOrders, getOrder, createOrder } from '../utils/contractHelpers'
 
 Vue.use(Vuex)
 
@@ -37,11 +37,35 @@ export const store = new Vuex.Store({
         },
         registerContractMutation(state, payload) {
             console.log("[DEBUG] registerContractMutation being executed", payload)
-            state.contractInstance = () => payload            
+            state.contractInstance = () => payload   
+            let contract = state.contractInstance()
+
+            state.contractEvents.LogModerAdded = contract.LogModerAdded
+            state.contractEvents.LogModerRemoved = contract.LogModerRemoved         
+            state.contractEvents.LogOrderCreated = contract.LogOrderCreated         
+            state.contractEvents.LogOrderModified = contract.LogOrderModified         
+            state.contractEvents.LogOrderStarted = contract.LogOrderStarted         
+            state.contractEvents.LogOrderUnlockedByOwner = contract.LogOrderUnlockedByOwner         
+            state.contractEvents.LogOrderUnlockedByFreelancer = contract.LogOrderUnlockedByFreelancer         
+            state.contractEvents.LogOrderCompleted = contract.LogOrderCompleted         
+            state.contractEvents.LogOrderRemoved = contract.LogOrderRemoved         
+            state.contractEvents.LogOrderFreelancerAdded = contract.LogModerAdded         
         },
-        renewOrders(state, payload) {
-            console.log("[DEBUG] renewOrders being executed", payload)
+        updateOrdersMutation(state, payload) {
+            console.log("[DEBUG] updateOrdersMutation being executed", payload)
             state.orders = payload
+        },
+        updateSingleOrderMutation(state, payload) {
+            console.log("[DEBUG] updateOrdersMutation being executed", payload)
+            Vue.set(state.orders, payload.id, payload)
+        },
+        removeSingleOrderMutation(state, id) {
+            console.log("[DEBUG] removeSingleOrderMutation being executed", id)
+            Vue.delete(state.orders, id)
+        },
+        setWeb3ProcessingMutation(state, payload) {
+            console.log("[DEBUG] setWeb3ProcessingMutation being executed", payload)
+            state.web3State.isProcessing = payload
         }
     },
     actions: {
@@ -66,16 +90,46 @@ export const store = new Vuex.Store({
             });
             commit('registerIpfsMutation', ipfs)
         },
-        getContractAction({ commit }) {
-            getContract.then(result => {
-                commit('registerContractMutation', result)
-            }).catch(e => console.log(e))
+        async getContractAction({ commit }) {
+            try {
+                console.log('[DEBUG] getContractAction being executed')
+                let contract = await getContract
+                commit('registerContractMutation', contract)
+            } catch (err) {
+                console.error("[ERROR] In getContractAction():", err)
+            }
+        },
+        setWeb3ProcessingAction({commit}, payload) {
+            console.log("[DEBUG] setWeb3ProcessingAction being executed")
+            commit("setWeb3ProcessingMutation", payload)
         },
         async getOrdersListAction({ commit }) {
-            commit('renewOrders', await getAllOrders())
+            commit('updateOrdersMutation', await getAllOrders())
+        },
+        async updateSingleOrderAction({commit}, id) {
+            commit('updateSingleOrderMutation', await getOrder(id))
+        },
+        removeSingleOrderAction({commit}, id) {
+            commit("removeSingleOrderMutation", id)
         },
         async createOrderAction({commit}, payload) {
-            await createOrder(payload)
-        }
+            let LogOrderCreated = await createOrder(payload)
+            if (!LogOrderCreated) {
+                commit('setWeb3ProcessingMutation', false)
+                return
+            }
+
+            let event = await LogOrderCreated({'owner': state.web3State.coinbase})
+            event.watch(async function(err, res) {
+                if (err) {
+                    console.error("[ERROR] While watching LogOrderCreated event:", err)
+                }
+                else {
+                    console.log("[DEBUG] Got response from LogOrderCreated event:", res)
+                    commit('renewOrders', await getAllOrders())
+                }
+                commit('setWeb3ProcessingMutation', false)
+            })
+        },
     }
 })

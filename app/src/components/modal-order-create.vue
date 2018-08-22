@@ -25,7 +25,7 @@ is-offset-1-mobile">
                         <div class="field">
                           <label class="label">Title</label>
                           <div class="control has-icons-left has-icons-right">
-                            <input class="input" type="text" v-model="title" placeholder="Order title">
+                            <input :class="{'input':true, 'is-danger':title_error_flag}" type="text" v-model="title" placeholder="Order title">
                             <span class="icon is-small is-left">
                               <i class="fa fa-font"></i>
                             </span>
@@ -42,7 +42,7 @@ is-offset-1-mobile">
                         <div class="field">
                           <label class="label">Email</label>
                           <div class="control has-icons-left has-icons-right">
-                            <input class="input" type="email" v-model="email_main" placeholder="example@mail.com">
+                            <input :class="{'input':true, 'is-danger':email_invalid_flag}" type="email" v-model="email_main" placeholder="example@mail.com">
                             <span class="icon is-small is-left">
                               <i class="fa fa-envelope"></i>
                             </span>
@@ -58,7 +58,7 @@ is-offset-1-mobile">
                         <div class="field">
                           <label class="label">Repeat Email</label>
                           <div class="control has-icons-left has-icons-right">
-                            <input class="input" type="email" v-model="email_repeat" placeholder="example@mail.com">
+                            <input :class="{'input':true, 'is-danger':email_different_flag}" type="email" v-model="email_repeat" placeholder="example@mail.com">
                             <span class="icon is-small is-left">
                               <i class="fa fa-envelope"></i>
                             </span>
@@ -74,7 +74,7 @@ is-offset-1-mobile">
                         <div class="field">
                           <label class="label">Additional contact information</label>
                           <div class="control has-icons-left has-icons-right">
-                            <input class="input" type="text" v-model="additional_contact" placeholder="skype: username / telegram: @username">
+                            <input :class="{'input': true, 'is-danger':additional_contact_error_flag}" type="text" v-model="additional_contact" placeholder="skype: username / telegram: @username">
                             <span class="icon is-small is-left">
                               <i class="fa fa-font"></i>
                             </span>
@@ -127,7 +127,7 @@ is-offset-1-mobile">
                           <label class="label">Budget</label>
                           <div class="field has-addons">
                             <div class="control has-icons-left has-icons-right has-addons">
-                              <input class="input" type="text" v-model="budget">
+                              <input :class="{'input':true, 'is-danger':budget_error_flag}" type="text" v-model="budget">
                               <span class="icon is-small is-left">
                                 <i class="fa fa-money"></i>
                               </span>
@@ -146,7 +146,10 @@ is-offset-1-mobile">
 
                         <div class="field is-grouped">
                           <div class="control">
-                            <button class="button is-success" v-on:click="submitForm()">
+                            <button :class="{'button':true,
+                                             'is-success':true,
+                                             'is-loading':isProcessing,}" 
+                                    v-on:click="submitForm()">
                               <span class="icon is-small">
                                 <i class="fa fa-check"></i>
                               </span>
@@ -154,7 +157,7 @@ is-offset-1-mobile">
                             </button>
                           </div>
                           <div class="control">
-                            <button class="button is-danger" @click="$emit('close')">Cancel</button>
+                            <button class="button is-danger" @click="$emit('close')">Close</button>
                           </div>
                         </div>
 
@@ -173,24 +176,18 @@ is-offset-1-mobile">
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "modal-order-create",
   data() {
     return {
-      // title: "",
-      // email_main: "",
-      // email_repeat: "",
-      // additional_contact: "",
-      // description: "",
-      // file: null,
-      // budget: 0,
-      title: "Awesome job",
-      email_main: "test@mail.com",
-      email_repeat: "test@mail.com",
-      additional_contact: "skype: 133t_guy",
-      description: "Awesome job\n\nFor awesome freelancer",
+      title: "",
+      email_main: "",
+      email_repeat: "",
+      additional_contact: "",
+      description: "",
       file: null,
-      budget: 0.3,
+      budget: 0,
       title_error_flag: true,
       title_error_str: "Title required",
       email_invalid_flag: true,
@@ -203,23 +200,32 @@ export default {
       budget_error_str: "Must be a number and more than 0"
     }
   },
+  computed: mapState({
+    isProcessing: state => state.web3State.isProcessing,
+  }),
   methods: {
     submitForm() {
       if (this.title_error_flag || this.email_invalid_flag 
           || this.email_different_flag || this.additional_contact_error_flag
-          || this.budget_error_flag) {
-        console.log("[DEBUG] createOrderAction canceled: one of flags is up!")
+          || this.budget_error_flag || this.isProcessing) {
+        console.log("[DEBUG] createOrderAction canceled: one of flags is up or processing another transaction!")
         return
       }
 
-      let reader = new window.FileReader()
-      reader.onloadend = () => this.submitFormContinue(reader)
-      reader.readAsArrayBuffer(this.file)
+      this.$store.dispatch('setWeb3ProcessingAction', true)
+
+      if(this.file) {
+        let reader = new window.FileReader()
+        reader.onloadend = () => this.submitFormContinue(reader)
+        reader.readAsArrayBuffer(this.file)
+      }
+      else {
+        this.submitFormContinue(null)
+      }
     },
     submitFormContinue(reader) {
-      let file_buffer = reader.result
-
-      console.log("[DEBUG] File was read:", file_buffer)
+      let file_buffer = null
+      if (reader) file_buffer = reader.result
 
       let payload = {
         "title": this.title,
@@ -270,6 +276,13 @@ export default {
       }
       else {
         this.email_invalid_flag = false
+      }
+
+      if (newValue !== this.email_repeat) {
+        this.email_different_flag = true
+      }
+      else {
+        this.email_different_flag = false
       }
     },
     email_repeat: function (newValue, oldValue) {
