@@ -157,7 +157,12 @@ is-offset-1-mobile">
                             </button>
                           </div>
                           <div class="control">
-                            <button class="button is-danger" @click="$emit('close')">Close</button>
+                            <button class="button is-danger" @click="$emit('close')">
+                              <span class="icon is-small">
+                                <i class="fa fa-times"></i>
+                              </span>
+                              <span>Close</span>
+                            </button>
                           </div>
                         </div>
 
@@ -208,7 +213,7 @@ export default {
       if (this.title_error_flag || this.email_invalid_flag 
           || this.email_different_flag || this.additional_contact_error_flag
           || this.budget_error_flag || this.isProcessing) {
-        console.log("[DEBUG] createOrderAction canceled: one of flags is up or processing another transaction!")
+        console.log("[DEBUG] createOrder() canceled: one of flags is up or processing another transaction!")
         return
       }
 

@@ -16,7 +16,7 @@
         <div class="navbar-menu navbar-end" v-bind:class="{ 'is-active': isActive }">
           
           <router-link to="/" class="navbar-item r-item">Home</router-link>
-          <router-link to="/" class="navbar-item r-item">Home</router-link>
+          <router-link to="/owner-orders" class="navbar-item r-item">My Orders (owned)</router-link>
           <router-link to="/" class="navbar-item r-item">Home</router-link>
 
           <div class="navbar-item">

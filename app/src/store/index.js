@@ -5,7 +5,8 @@ import getWeb3 from '../utils/getWeb3'
 import ipfs from '../utils/getIPFS'
 import pollWeb3 from '../utils/pollWeb3'
 import getContract from '../utils/getTruffleContract'
-import { getAllOrders, getOrder, createOrder } from '../utils/contractHelpers'
+import { getAllOrders, getOrder, createOrder, modifyOrder, removeOrder, completeOrder,
+    setOrderFreelancer, unlockOrderOwner, unlockOrderFreelancer  } from '../utils/contractHelpers'
 
 Vue.use(Vuex)
 
@@ -49,14 +50,14 @@ export const store = new Vuex.Store({
             state.contractEvents.LogOrderUnlockedByFreelancer = contract.LogOrderUnlockedByFreelancer         
             state.contractEvents.LogOrderCompleted = contract.LogOrderCompleted         
             state.contractEvents.LogOrderRemoved = contract.LogOrderRemoved         
-            state.contractEvents.LogOrderFreelancerAdded = contract.LogModerAdded         
+            state.contractEvents.LogOrderFreelancerAdded = contract.LogOrderFreelancerAdded         
         },
         updateOrdersMutation(state, payload) {
             console.log("[DEBUG] updateOrdersMutation being executed", payload)
             state.orders = payload
         },
         updateSingleOrderMutation(state, payload) {
-            console.log("[DEBUG] updateOrdersMutation being executed", payload)
+            console.log("[DEBUG] updateSingleOrderMutation being executed", payload)
             Vue.set(state.orders, payload.id, payload)
         },
         removeSingleOrderMutation(state, id) {
@@ -113,20 +114,120 @@ export const store = new Vuex.Store({
             commit("removeSingleOrderMutation", id)
         },
         async createOrderAction({commit}, payload) {
-            let LogOrderCreated = await createOrder(payload)
-            if (!LogOrderCreated) {
+            let ActionEvent = await createOrder(payload)
+            if (!ActionEvent) {
                 commit('setWeb3ProcessingMutation', false)
                 return
             }
 
-            let event = await LogOrderCreated({'owner': state.web3State.coinbase})
+            let event = await ActionEvent({'owner': state.web3State.coinbase})
             event.watch(async function(err, res) {
                 if (err) {
-                    console.error("[ERROR] While watching LogOrderCreated event:", err)
+                    console.error("[ERROR] While watching createOrderAction event:", err)
                 }
-                else {
-                    console.log("[DEBUG] Got response from LogOrderCreated event:", res)
-                    commit('renewOrders', await getAllOrders())
+                commit('setWeb3ProcessingMutation', false)
+            })
+        },
+        async modifyOrderAction({commit}, payload) {
+            let id = payload.id
+            let ActionEvent = await modifyOrder(payload)
+            if (!ActionEvent) {
+                commit('setWeb3ProcessingMutation', false)
+                return
+            }
+
+            let event = await ActionEvent({'id': id})
+            event.watch(async function(err, res) {
+                if (err) {
+                    console.error("[ERROR] While watching modifyOrderAction event:", err)
+                } else {
+                    console.log("[DEBUG] Got response from modifyOrderAction for id #", id,":", res)
+                }
+                commit('setWeb3ProcessingMutation', false)
+            })
+        },
+        async removeOrderAction({commit}, id) {
+            let ActionEvent = await removeOrder(id)
+            if (!ActionEvent) {
+                commit('setWeb3ProcessingMutation', false)
+                return
+            }
+
+            let event = await ActionEvent({'id': id})
+            event.watch(async function(err, res) {
+                if (err) {
+                    console.error("[ERROR] While watching removeOrderAction event:", err)
+                } else {
+                    console.log("[DEBUG] Got response from removeOrderAction for id #", id,":", res)
+                }
+                commit('setWeb3ProcessingMutation', false)
+            })
+        },
+        async completeOrderAction({commit}, id) {
+            let ActionEvent = await completeOrder(id)
+            if (!ActionEvent) {
+                commit('setWeb3ProcessingMutation', false)
+                return
+            }
+
+            let event = await ActionEvent({'id': id})
+            event.watch(async function(err, res) {
+                if (err) {
+                    console.error("[ERROR] While watching completeOrderAction event:", err)
+                } else {
+                    console.log("[DEBUG] Got response from completeOrderAction for id #", id,":", res)
+                }
+                commit('setWeb3ProcessingMutation', false)
+            })
+        },
+        async setFreelancerAction({commit}, payload) {
+            let id = payload.id
+            let ActionEvent = await setOrderFreelancer(payload)
+            if (!ActionEvent) {
+                commit('setWeb3ProcessingMutation', false)
+                return
+            }
+
+            let event = await ActionEvent({'id': id})
+            event.watch(async function(err, res) {
+                if (err) {
+                    console.error("[ERROR] While watching setFreelancerAction event:", err)
+                } else {
+                    console.log("[DEBUG] Got response from setFreelancerAction for id #", id,":", res)
+                }
+                commit('setWeb3ProcessingMutation', false)
+            })
+        },
+        async unlockOrderOwnerAction({commit}, id) {
+            let ActionEvent = await unlockOrderOwner(id)
+            if (!ActionEvent) {
+                commit('setWeb3ProcessingMutation', false)
+                return
+            }
+
+            let event = await ActionEvent({'id': id})
+            event.watch(async function(err, res) {
+                if (err) {
+                    console.error("[ERROR] While watching unlockOrderOwnerAction event:", err)
+                } else {
+                    console.log("[DEBUG] Got response from unlockOrderOwnerAction for id #", id,":", res)
+                }
+                commit('setWeb3ProcessingMutation', false)
+            })
+        },
+        async unlockOrderFreelancerAction({commit}, id) {
+            let ActionEvent = await unlockOrderFreelancer(id)
+            if (!ActionEvent) {
+                commit('setWeb3ProcessingMutation', false)
+                return
+            }
+
+            let event = await ActionEvent({'id': id})
+            event.watch(async function(err, res) {
+                if (err) {
+                    console.error("[ERROR] While watching unlockOrderFreelancerAction event:", err)
+                } else {
+                    console.log("[DEBUG] Got response from unlockOrderFreelancerAction for id #", id,":", res)
                 }
                 commit('setWeb3ProcessingMutation', false)
             })

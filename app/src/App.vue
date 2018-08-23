@@ -131,10 +131,11 @@ export default {
   },
   methods: {
     dispatchGetContractAction: function () {
-      console.log("[DEBUG] getContractAction dispatched  from App.vue");
+      console.log("[DEBUG] getContractAction dispatched from App.vue");
       this.$store.dispatch("getContractAction");
     },
     dispatchUpdateSingleOrderAction: function(id) {
+      console.log("[DEBUG] updateSingleOrderAction dispatched from App.vue:", id);
       this.$store.dispatch("updateSingleOrderAction", id)
     },
     dispatchRemoveSingleOrderAction: function(id) {

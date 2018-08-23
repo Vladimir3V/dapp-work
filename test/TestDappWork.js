@@ -101,7 +101,7 @@ contract('DappWork', accounts => {
         ));
     });
 
-    it("[REVERT] Get/modify/remove/setFreelancer/unlock/complete for for a non-existent order", async () => {
+    it("[REVERT] Get/modify/remove/setFreelancer/unlock/complete for a non-existent order", async () => {
         assert.ok(await hasReverted(
             dappWork.getOrderById(3, {from: accounts[4]})
         ));

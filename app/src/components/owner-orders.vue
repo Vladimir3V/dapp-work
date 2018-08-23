@@ -3,16 +3,16 @@
 
       <div class="container">
 
-        <h1 class="title">Available Orders</h1>
+        <h1 class="title">My Orders</h1>
       
       </div>
 
       <div class="container">
         <div class="columns" v-if="orders">
-            <home-order-card v-for="order in orderedOrders"
+            <owner-order-card v-for="order in orderedOrders"
                 v-bind:key="order.id"
-                v-if="!order.owner_lock && !order.freelancer_lock"
-                v-bind:orderData="order"></home-order-card>
+                v-if="order.owner_addr == myAddress"
+                v-bind:orderData="order"></owner-order-card>
         </div>
       </div>
 
@@ -20,16 +20,17 @@
 </template>
 
 <script>
-import HomeOrderCard from "@/components/home-order-card";
+import OwnerOrderCard from "@/components/owner-order-card";
 import { mapState } from "vuex";
 export default {
-  name: "home",
+  name: "owner-orders",
   components: {
-    "home-order-card": HomeOrderCard
+    "owner-order-card": OwnerOrderCard
   },
   computed: mapState({
     orders: state => state.orders,
-    orderedOrders: state => _.orderBy(state.orders, 'id', 'desc')
+    orderedOrders(state) { return _.orderBy(this.orders, 'id', 'desc')},
+    myAddress: state => state.web3State.coinbase
   }),
   methods: {}
 };

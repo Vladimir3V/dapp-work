@@ -321,8 +321,6 @@ contract DappWork is Pausable
 
         uint _index = ordersListIndex[_id].index;
 
-        // TODO: Check if current freelancer request added
-
         ordersList[_index].freelancer = _freelancer;
         ordersList[_index].freelancerContactEmail = _freelancerContactEmail;
         ordersList[_index].ownerLock = true;
@@ -340,6 +338,7 @@ contract DappWork is Pausable
         public view orderExists(_id) returns(bool)
     {
         uint _index = ordersListIndex[_id].index;
+        // TODO: Think about that freelancer may need only his own lock
         if (_freelancer == ordersList[_index].freelancer
             && ordersList[_index].freelancerLock
             && ordersList[_index].ownerLock)
