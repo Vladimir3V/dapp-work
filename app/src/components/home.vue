@@ -4,6 +4,13 @@
       <div class="container">
 
         <h1 class="title">Available Orders</h1>
+        <div class="subtitle box is-6">
+          <ul>
+            <li>Click on the order to get a detailed description.</li>
+            <li>Contact with the order owner to ask him to add you as a freelancer for his order (contact information you will find in the detailed description).</li>
+            <li>You can check orders assigned to you on "Assigned Order" page.</li>
+          </ul>
+        </div>
       
       </div>
 
@@ -39,7 +46,17 @@ export default {
 @import "../mq"
 
 .container
-  margin-top: 20px
+  margin-top: 1.1em
+
+.title
+  margin-bottom: 1.1em
+
+.box
+  margin-bottom: 1.1em
+
+ul
+  list-style: circle
+  margin-left: 1.1em  
 
 .table
   flex-wrap: wrap

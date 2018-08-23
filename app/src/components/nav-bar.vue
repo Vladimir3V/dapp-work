@@ -16,8 +16,8 @@
         <div class="navbar-menu navbar-end" v-bind:class="{ 'is-active': isActive }">
           
           <router-link to="/" class="navbar-item r-item">Home</router-link>
-          <router-link to="/owner-orders" class="navbar-item r-item">My Orders (owned)</router-link>
-          <router-link to="/" class="navbar-item r-item">Home</router-link>
+          <router-link to="/owner-orders" class="navbar-item r-item">Own Orders</router-link>
+          <router-link to="/freelancer-orders" class="navbar-item r-item">Assigned Orders</router-link>
 
           <div class="navbar-item">
             <p class="control">

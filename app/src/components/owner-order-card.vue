@@ -345,7 +345,8 @@
               <div class="control">
                 <button :class="{'button':true,
                                   'is-warning':true,
-                                  'is-loading':isProcessing,}" 
+                                  'is-loading':isProcessing,}"
+                        :disabled="!owner_lock" 
                         v-on:click="submitUnlock()">
                   <span class="icon is-small">
                     <i class="fa fa-unlock"></i>
@@ -369,7 +370,8 @@
               <div class="control">
                 <button :class="{'button':true,
                                   'is-success':true,
-                                  'is-loading':isProcessing,}" 
+                                  'is-loading':isProcessing,}"
+                        :disabled="!isLocked" 
                         v-on:click="submitComplete()">
                   <span class="icon is-small">
                     <i class="fa fa-check"></i>
@@ -462,7 +464,9 @@ export default {
       freelancer_email_invalid_flag: true,
       freelancer_email_invalid_str: "Valid email required",
       freelancer_email_different_flag: true,
-      freelancer_email_different_str: "Emails are different"
+      freelancer_email_different_str: "Emails are different",
+
+      zero_address: "0x0000000000000000000000000000000000000000"
     };
   },
   computed: mapState({
@@ -481,7 +485,7 @@ export default {
       this.owner_addr = value.owner_addr;
       this.owner_email = value.owner_email;
       this.owner_contact = value.owner_contact;
-      this.freelancer_addr = value.freelancer_addr
+      this.freelancer_addr = (value.freelancer_addr === this.zero_address) ? null : value.freelancer_addr
       this.freelancer_email = value.freelancer_email
       this.getTextFromIpfs(value.text_hash);
       this.file_hash = value.file_hash;

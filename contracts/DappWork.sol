@@ -340,8 +340,8 @@ contract DappWork is Pausable
         uint _index = ordersListIndex[_id].index;
         // TODO: Think about that freelancer may need only his own lock
         if (_freelancer == ordersList[_index].freelancer
-            && ordersList[_index].freelancerLock
-            && ordersList[_index].ownerLock)
+            && ordersList[_index].freelancerLock)
+            // && ordersList[_index].ownerLock)
         {
             return true;
         }
@@ -383,8 +383,11 @@ contract DappWork is Pausable
     
     function completeOrder(uint _id) public onlyOrderOwner(_id) whenNotPaused
     {
+        uint _index = ordersListIndex[_id].index;
+        bool isLocked = ordersList[_index].freelancerLock || ordersList[_index].ownerLock;
+        require(isLocked, "Order is not locked. You can't complete fully unlocked order");
+        require(_freelancer != ordersList[_index].freelancer, "Can't send coins to 0x0 address");
         (uint _budget, , address _freelancer) = _removeOrder(_id);
-        require(_freelancer != address(0), "Can't send coins to 0x0 address");
         uint contract_profit = _budget.mul(houseEdge).div(100); // budget * houseEdge / 100
         uint to_freelancer = _budget.sub(contract_profit);  // budget - contract_profit
         contractProfit = contractProfit.add(contract_profit);

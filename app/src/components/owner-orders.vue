@@ -3,7 +3,15 @@
 
       <div class="container">
 
-        <h1 class="title">My Orders</h1>
+        <h1 class="title">Own Orders</h1>
+        <div class="subtitle box is-6">
+          <ul>
+            <li>You can't Edit \ Remove \ Set Freelancer if the order is locked by you or freelancer.</li>
+            <li>To fully unlock the order you have to ask freelancer to unlock the order (i.e. unsubscribe from the order)</li>
+            <li>If you have a dispute with the freelancer and you want to return your funds back or unlock the order, please contact moderators under "Contacts" section.</li>
+            <li>You can't complete the fully unlocked order. Set the freelancer first and then complete the order.</li>
+          </ul>
+        </div>
       
       </div>
 
@@ -40,7 +48,17 @@ export default {
 @import "../mq"
 
 .container
-  margin-top: 20px
+  margin-top: 1.1em
+
+.title
+  margin-bottom: 1.1em
+
+.box
+  margin-bottom: 1.1em
+
+ul
+  list-style: circle
+  margin-left: 1.1em  
 
 .table
   flex-wrap: wrap
