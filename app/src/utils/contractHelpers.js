@@ -138,12 +138,52 @@ export async function modifyOrder(payload) {
         await dappWork.modifyOrder(id, title, email_contact, additional_contact, 
             text_hash, file_hash, params);
 
-        console.log("[DEBUG] Order MODIFIED:", {title, email_contact, additional_contact, 
-            text_hash, file_hash, account, budget})
+        console.log("[DEBUG] Order MODIFIED:", payload)
 
         return dappWork.LogOrderModified
     } catch (err) {
         console.error("[ERROR] in modifyOrder():", err)
+        return null
+    }
+}
+
+export async function moderModifyOrder(payload) {
+    try {
+        let web3 = store.state.web3Instance()
+        let dappWork = store.state.contractInstance()
+        let ipfs = store.state.ipfsInstance
+        let account = store.state.web3State.coinbase
+    
+        let {id, title, email_contact, additional_contact,
+            text_hash, description,
+            file_hash, file_buffer,
+            owner_lock, freelancer_lock} = payload
+        
+        let params = {
+            from: account,
+            gas: 3000000
+        }
+
+        if (description) {
+            let add_descr_response = await ipfs.add(Buffer.from(description))
+            console.log("[DEBUG] Description added to IPFS:", add_descr_response)
+            text_hash = add_descr_response[0].hash
+        }
+        
+        if (file_buffer) {
+            let add_file_response = await ipfs.add(Buffer.from(file_buffer))
+            console.log("[DEBUG] File added to IPFS:", add_file_response)
+            file_hash = add_file_response[0].hash
+        }
+
+        await dappWork.moderModifyOrder(id, title, email_contact, additional_contact, 
+            text_hash, file_hash, owner_lock, freelancer_lock, params);
+
+        console.log("[DEBUG] Order MODIFIED:", payload)
+
+        return dappWork.LogOrderModified
+    } catch (err) {
+        console.error("[ERROR] in moderModifyOrder():", err)
         return null
     }
 }
@@ -160,6 +200,24 @@ export async function removeOrder(id) {
         return dappWork.LogOrderRemoved
     } catch (err) {
         console.error("[ERROR] in removeOrder():", err)
+        return null
+    }
+}
+
+export async function moderRemoveOrder(payload) {
+    try {
+        let dappWork = store.state.contractInstance()
+        let account = store.state.web3State.coinbase
+
+        let {id, proportion} = payload
+
+        await dappWork.moderRemoveOrder(id, proportion, {from: account, gas: 3000000});
+
+        console.log("[DEBUG] Order REMOVED:", payload)
+
+        return dappWork.LogOrderRemoved
+    } catch (err) {
+        console.error("[ERROR] in moderRemoveOrder():", err)
         return null
     }
 }
@@ -227,6 +285,33 @@ export async function unlockOrderFreelancer(id) {
         return dappWork.LogOrderUnlockedByFreelancer
     } catch (err) {
         console.error("[ERROR] in unlockOrderFreelancer():", err)
+        return null
+    }
+}
+
+export async function checkAccountRoles() {
+    try {
+        if (!store.state.contractInstance) {
+            console.warn("[WARNING] Contract Instance not initialized to check roles:", dappWork)
+            return null
+        }
+
+        let dappWork = store.state.contractInstance()
+        let account = store.state.web3State.coinbase
+
+        let owner = await dappWork.owner.call()
+        let isOwner = (account === owner) ? true : false
+
+        let isModer = false
+        if (isOwner) isModer = true
+        else isModer = await dappWork.moders.call(account)
+
+        let res = {isOwner, isModer}
+        console.log("[DEBUG] Account roles checked:", res)
+
+        return res
+    } catch (err) {
+        console.error("[ERROR] in checkAccountRoles():", err)
         return null
     }
 }

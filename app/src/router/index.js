@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from '@/components/home'
 import OwnerOrders from '@/components/owner-orders'
 import FreelancerOrders from '@/components/freelancer-orders'
+import ModerOrders from '@/components/moder-orders'
 
 Vue.use(Router)
 
@@ -22,6 +23,11 @@ export default new Router({
       path: '/freelancer-orders',
       name: 'freelancer-orders',
       component: FreelancerOrders
+    },
+    {
+      path: '/moder-orders',
+      name: 'moder-orders',
+      component: ModerOrders
     }
   ]
 })

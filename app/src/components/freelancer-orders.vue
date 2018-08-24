@@ -9,6 +9,7 @@
             <ul>
                 <li>If you are going to unlock the order, it means that you are going to abandon it without the ability to receive funds.</li>
                 <li>But with the goodwill of the customer, you can still get the funds if he still decides to complete the order.</li>
+                <li>If you have a dispute with the customer and you want to get your funds for the order being complete, please contact moderators under "Contacts" section.</li>
             </ul>
         </div>
 

@@ -8,8 +8,8 @@
           <ul>
             <li>You can't Edit \ Remove \ Set Freelancer if the order is locked by you or freelancer.</li>
             <li>To fully unlock the order you have to ask freelancer to unlock the order (i.e. unsubscribe from the order)</li>
-            <li>If you have a dispute with the freelancer and you want to return your funds back or unlock the order, please contact moderators under "Contacts" section.</li>
             <li>You can't complete the fully unlocked order. Set the freelancer first and then complete the order.</li>
+            <li>If you have a dispute with the freelancer and you want to return your funds back or unlock the order, please contact moderators under "Contacts" section.</li>
           </ul>
         </div>
       

@@ -18,6 +18,8 @@
           <router-link to="/" class="navbar-item r-item">Home</router-link>
           <router-link to="/owner-orders" class="navbar-item r-item">Own Orders</router-link>
           <router-link to="/freelancer-orders" class="navbar-item r-item">Assigned Orders</router-link>
+          <router-link to="/moder-orders" class="navbar-item r-item" v-if="isModer">Moder Panel</router-link>
+          <router-link to="/owner-options" class="navbar-item r-item" v-if="isOwner">Owner Panel</router-link>
 
           <div class="navbar-item">
             <p class="control">
@@ -51,6 +53,10 @@ export default {
       showModalOrderCreate: false
     };
   },
+   computed: mapState({
+    isModer: state => state.contractModer,
+    isOwner: state => state.contractOwner
+  }),
   methods: {
     toggleNav() {
       this.isActive = !this.isActive;

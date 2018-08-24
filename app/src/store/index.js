@@ -6,7 +6,8 @@ import ipfs from '../utils/getIPFS'
 import pollWeb3 from '../utils/pollWeb3'
 import getContract from '../utils/getTruffleContract'
 import { getAllOrders, getOrder, createOrder, modifyOrder, removeOrder, completeOrder,
-    setOrderFreelancer, unlockOrderOwner, unlockOrderFreelancer  } from '../utils/contractHelpers'
+    setOrderFreelancer, unlockOrderOwner, unlockOrderFreelancer, 
+    checkAccountRoles, moderModifyOrder, moderRemoveOrder } from '../utils/contractHelpers'
 
 Vue.use(Vuex)
 
@@ -51,6 +52,11 @@ export const store = new Vuex.Store({
             state.contractEvents.LogOrderCompleted = contract.LogOrderCompleted         
             state.contractEvents.LogOrderRemoved = contract.LogOrderRemoved         
             state.contractEvents.LogOrderFreelancerAdded = contract.LogOrderFreelancerAdded         
+        },
+        setContractRolesMutation(state, payload) {
+            console.log("[DEBUG] setWeb3ProcessingMutation being executed", payload)
+            state.contractModer = payload.isModer
+            state.contractOwner = payload.isOwner
         },
         updateOrdersMutation(state, payload) {
             console.log("[DEBUG] updateOrdersMutation being executed", payload)
@@ -100,6 +106,11 @@ export const store = new Vuex.Store({
                 console.error("[ERROR] In getContractAction():", err)
             }
         },
+        async setContractRolesActions({commit}) {
+            console.log('[DEBUG] registerIpfsAction being executed')
+            let res = await checkAccountRoles()
+            if (res) commit("setContractRolesMutation", res)
+        },
         setWeb3ProcessingAction({commit}, payload) {
             console.log("[DEBUG] setWeb3ProcessingAction being executed")
             commit("setWeb3ProcessingMutation", payload)
@@ -146,6 +157,24 @@ export const store = new Vuex.Store({
                 commit('setWeb3ProcessingMutation', false)
             })
         },
+        async moderModifyOrderAction({commit}, payload) {
+            let id = payload.id
+            let ActionEvent = await moderModifyOrder(payload)
+            if (!ActionEvent) {
+                commit('setWeb3ProcessingMutation', false)
+                return
+            }
+
+            let event = await ActionEvent({'id': id})
+            event.watch(async function(err, res) {
+                if (err) {
+                    console.error("[ERROR] While watching moderModifyOrderAction event:", err)
+                } else {
+                    console.log("[DEBUG] Got response from moderModifyOrderAction for id #", id,":", res)
+                }
+                commit('setWeb3ProcessingMutation', false)
+            })
+        },
         async removeOrderAction({commit}, id) {
             let ActionEvent = await removeOrder(id)
             if (!ActionEvent) {
@@ -159,6 +188,24 @@ export const store = new Vuex.Store({
                     console.error("[ERROR] While watching removeOrderAction event:", err)
                 } else {
                     console.log("[DEBUG] Got response from removeOrderAction for id #", id,":", res)
+                }
+                commit('setWeb3ProcessingMutation', false)
+            })
+        },
+        async moderRemoveOrderAction({commit}, payload) {
+            let id = payload.id
+            let ActionEvent = await moderRemoveOrder(payload)
+            if (!ActionEvent) {
+                commit('setWeb3ProcessingMutation', false)
+                return
+            }
+
+            let event = await ActionEvent({'id': id})
+            event.watch(async function(err, res) {
+                if (err) {
+                    console.error("[ERROR] While watching moderRemoveOrderAction event:", err)
+                } else {
+                    console.log("[DEBUG] Got response from moderRemoveOrderAction for id #", id,":", res)
                 }
                 commit('setWeb3ProcessingMutation', false)
             })

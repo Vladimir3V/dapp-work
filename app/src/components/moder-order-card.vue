@@ -90,28 +90,51 @@
                 </div>
               </div>
 
-              <div class="field ">
-                <label class="label">New budget (if needed)</label>
-                <div class="field has-addons">
-                  <div class="control has-icons-left has-icons-right has-addons">
-                    <input :class="{'input':true, 'is-danger':budget_error_flag}" type="text" v-model="budget">
-                    <span class="icon is-small is-left">
-                      <i class="fa fa-money"></i>
-                    </span>
-                    <span class="icon is-small is-right" v-if="budget_error_flag">
-                      <i class="fa fa-exclamation-triangle"></i>
-                    </span>
-                  </div>
-                  <div class="control">
-                    <div class="button is-static">Ether</div>
-                  </div>
-                </div>
-                <div v-if="budget_error_flag">
-                  <p class="help is-danger">{{budget_error_str}}</p>
-                </div>
+            </div>
+
+            <div class="card-footer">
+
+              <div class="card-footer-item">
+
+                <span> Owner:&nbsp; </span>
+                <input type="checkbox" v-model="owner_lock">&nbsp;
+                <span class="has-text-danger" v-if="owner_lock">
+                <span class="icon is-small" >
+                    <i class="fa fa-lock"></i>
+                </span>
+                <span>Locked</span>
+                </span>
+                <span class="has-text-success" v-else>
+                <span class="icon is-small">
+                    <i class="fa fa-unlock"></i>
+                </span>
+                <span>Unlocked</span>
+                </span>
+
               </div>
 
-            </div>
+                <div class="card-footer-item">
+
+                    <span> Freelancer:&nbsp; </span>
+                    <input type="checkbox" v-model="freelancer_lock">&nbsp;
+                    <span class="has-text-danger" v-if="freelancer_lock">
+                    <span class="icon is-small" >
+                        <i class="fa fa-lock"></i>
+                    </span>
+                    <span>Locked</span>
+                    </span>
+                    <span class="has-text-success" v-else>
+                    <span class="icon is-small">
+                        <i class="fa fa-unlock"></i>
+                    </span>
+                    <span>Unlocked</span>
+                    </span>
+
+                </div>
+
+            </div>                
+
+
             <div class="card-footer">
 
               <div class="card-footer-item">
@@ -149,9 +172,9 @@
 
       </div>
 
-<!-- ############### -->
-<!-- FREELANCER CARD -->
-<!-- ############### -->
+<!-- ########### -->
+<!-- REMOVE CARD -->
+<!-- ########### -->
 
       <div class="card" v-else-if="mode==2">
         <header class="card-header">
@@ -159,59 +182,50 @@
             <p class="title is-5">{{title}}</p>
           </div>
         </header>
+
           <div class="card-content">
-          <div class="content">
-
+            <div class="content">
+                
               <div class="field">
-                <label class="label">Freelancer Address</label>
+                <label class="label">Proportion</label>
+                <label >Percent of the budget which will be sent to the order owner</label>
                 <div class="control has-icons-left has-icons-right">
-                  <input :class="{'input':true, 'is-danger':freelancer_addr_error_flag}" type="text" v-model="freelancer_addr" placeholder="0x0000000000000000000000000000000000000000">
+                  <input :class="{'input':true, 'is-danger':proportion_error_flag}" type="text" v-model="proportion_value">
                   <span class="icon is-small is-left">
-                    <i class="fa fa-user"></i>
+                    <i class="fa fa-money"></i>
                   </span>
-                  <span class="icon is-small is-right" v-if="freelancer_addr_error_flag">
+                  <span class="icon is-small is-right" v-if="proportion_error_flag">
                     <i class="fa fa-exclamation-triangle"></i>
                   </span>
 
                 </div>
-                <div v-if="freelancer_addr_error_flag">
-                  <p class="help is-danger">{{freelancer_addr_error_str}}</p>
+                <div v-if="proportion_error_flag">
+                  <p class="help is-danger">{{proportion_error_str}}</p>
                 </div>
               </div>
 
-              <div class="field">
-                <label class="label">Email</label>
-                <div class="control has-icons-left has-icons-right">
-                  <input :class="{'input':true, 'is-danger':freelancer_email_invalid_flag}" type="email" v-model="freelancer_email" placeholder="example@mail.com">
-                  <span class="icon is-small is-left">
-                    <i class="fa fa-envelope"></i>
-                  </span>
-                  <span class="icon is-small is-right" v-if="freelancer_email_invalid_flag">
-                    <i class="fa fa-exclamation-triangle"></i>
-                  </span>
+              <nav class="level is-mobile">
+                <div class="level-item has-text-centered">
+                    <div>
+                    <p class="heading">Budget</p>
+                    <p class="subtitle">{{budget}} Ether</p>
+                    </div>
                 </div>
-                <div v-if="freelancer_email_invalid_flag">
-                  <p class="help is-danger">{{freelancer_email_invalid_str}}</p>
+                <div class="level-item has-text-centered">
+                    <div>
+                    <p class="heading">To Owner</p>
+                    <p class="subtitle">{{ownerProfit}} Ether</p>
+                    </div>
                 </div>
-              </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                    <p class="heading">To Freelancer</p>
+                    <p class="subtitle">{{freelancerProfit}} Ether</p>
+                    </div>
+                </div>
+              </nav>
 
-              <div class="field">
-                <label class="label">Repeat Email</label>
-                <div class="control has-icons-left has-icons-right">
-                  <input :class="{'input':true, 'is-danger':freelancer_email_different_flag}" type="email" v-model="freelancer_email_repeat" placeholder="example@mail.com">
-                  <span class="icon is-small is-left">
-                    <i class="fa fa-envelope"></i>
-                  </span>
-                  <span class="icon is-small is-right" v-if="freelancer_email_different_flag">
-                    <i class="fa fa-exclamation-triangle"></i>
-                  </span>
-                </div>
-                <div v-if="freelancer_email_different_flag">
-                  <p class="help is-danger">{{freelancer_email_different_str}}</p>
-                </div>
-              </div>
-
-          </div>
+            </div>
           </div>
           
           <div class="card-footer">
@@ -221,13 +235,13 @@
               <div class="field is-grouped">
                 <div class="control">
                   <button :class="{'button':true,
-                                    'is-success':true,
+                                    'is-warning':true,
                                     'is-loading':isProcessing,}" 
-                          v-on:click="submitFreelancer()">
+                          v-on:click="submitRemove()">
                     <span class="icon is-small">
-                      <i class="fa fa-check"></i>
+                      <i class="fa fa-exclamation"></i>
                     </span>
-                    <span>Submit</span>
+                    <span>Remove</span>
                   </button>
                 </div>
                 <div class="control">
@@ -324,44 +338,6 @@
         </div>
         
         <div class="card-footer">
-
-          <div class="card-footer-item">
-
-            <div class="field is-grouped">
-
-              <div class="control">
-                <button :class="{'button':true,
-                                  'is-link':true,
-                                  'is-loading':isProcessing}"
-                        :disabled="isLocked"
-                        v-on:click="mode=2">
-                  <span class="icon is-small">
-                    <i class="fa fa-user-circle"></i>
-                  </span>
-                  <span>Set Freelancer</span>
-                </button>
-              </div>
-
-              <div class="control">
-                <button :class="{'button':true,
-                                  'is-warning':true,
-                                  'is-loading':isProcessing,}"
-                        :disabled="!owner_lock" 
-                        v-on:click="submitUnlock()">
-                  <span class="icon is-small">
-                    <i class="fa fa-unlock"></i>
-                  </span>
-                  <span>Unlock</span>
-                </button>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        <div class="card-footer">
           
           <div class="card-footer-item">
 
@@ -369,22 +345,8 @@
 
               <div class="control">
                 <button :class="{'button':true,
-                                  'is-success':true,
-                                  'is-loading':isProcessing,}"
-                        :disabled="!isLocked" 
-                        v-on:click="submitComplete()">
-                  <span class="icon is-small">
-                    <i class="fa fa-check"></i>
-                  </span>
-                  <span>Complete</span>
-                </button>
-              </div>
-
-              <div class="control">
-                <button :class="{'button':true,
                                   'is-info':true,
                                   'is-loading':isProcessing}" 
-                        :disabled="isLocked"
                         v-on:click="mode=1">
                   <span class="icon is-small">
                     <i class="fa fa-edit"></i>
@@ -397,8 +359,7 @@
                 <button :class="{'button':true,
                                   'is-danger':true,
                                   'is-loading':isProcessing}" 
-                        :disabled="isLocked"
-                        v-on:click="submitRemove()">
+                        v-on:click="mode=2">
                   <span class="icon is-small">
                     <i class="fa fa-times"></i>
                   </span>
@@ -422,7 +383,7 @@ import axious from "axios";
 import { mapState } from "vuex";
 
 export default {
-  name: "owner-order-card",
+  name: "moder-order-card",
   props: {
     orderData: {
       type: Object,
@@ -457,22 +418,22 @@ export default {
       email_error_str: "Valid email required",
       contact_error_flag: false,
       contact_error_str: "The length must be less than 33 characters",
-      budget_error_flag: true,
-      budget_error_str: "Must be a number and more than 0",
-      freelancer_addr_error_flag: true,
-      freelancer_addr_error_str: "Valid address required",
-      freelancer_email_invalid_flag: true,
-      freelancer_email_invalid_str: "Valid email required",
-      freelancer_email_different_flag: true,
-      freelancer_email_different_str: "Emails are different",
+
+      proportion_value: 100,
+      proportion_error_flag: false,
+      proportion_error_str:
+        "Proportion must be an integer in the range from 0 to 100 inclusively",
 
       zero_address: "0x0000000000000000000000000000000000000000"
     };
   },
   computed: mapState({
     isProcessing: state => state.web3State.isProcessing,
-    isLocked(state) {
-      return this.owner_lock || this.freelancer_lock;
+    ownerProfit(state) {
+      return this.budget * this.proportion_value / 100;
+    },
+    freelancerProfit(state) {
+      return this.budget - this.ownerProfit;
     }
   }),
   mounted: function() {
@@ -485,8 +446,11 @@ export default {
       this.owner_addr = value.owner_addr;
       this.owner_email = value.owner_email;
       this.owner_contact = value.owner_contact;
-      this.freelancer_addr = (value.freelancer_addr === this.zero_address) ? null : value.freelancer_addr
-      this.freelancer_email = value.freelancer_email
+      this.freelancer_addr =
+        value.freelancer_addr === this.zero_address
+          ? null
+          : value.freelancer_addr;
+      this.freelancer_email = value.freelancer_email;
       this.getTextFromIpfs(value.text_hash);
       this.file_hash = value.file_hash;
       this.budget = value.budget;
@@ -512,7 +476,6 @@ export default {
         this.title_error_flag ||
         this.email_error_flag ||
         this.contact_error_flag ||
-        this.budget_error_flag ||
         this.isProcessing
       ) {
         console.log(
@@ -536,7 +499,6 @@ export default {
       if (reader) file_buffer = reader.result;
 
       let new_description = this.text === this.order_text ? null : this.text;
-      let new_budget = this.budget === this.order.budget ? null : this.budget;
 
       let payload = {
         id: this.id,
@@ -547,46 +509,20 @@ export default {
         description: new_description,
         file_hash: this.file_hash,
         file_buffer,
-        budget: new_budget
+        owner_lock: this.owner_lock,
+        freelancer_lock: this.freelancer_lock
       };
-      this.$store.dispatch("modifyOrderAction", payload);
+      this.$store.dispatch("moderModifyOrderAction", payload);
       this.mode = 0;
     },
     submitRemove() {
-      this.$store.dispatch("setWeb3ProcessingAction", true);
-      this.$store.dispatch("removeOrderAction", this.id);
-    },
-    submitFreelancer() {
-      if (
-        this.freelancer_addr_error_flag ||
-        this.freelancer_email_invalid_flag ||
-        this.freelancer_email_different_flag ||
-        this.isProcessing
-      ) {
-        console.log(
-          "[DEBUG] submitFreelancer() canceled: one of flags is up or processing another transaction!"
-        );
-        return;
-      }
-
-      this.$store.dispatch("setWeb3ProcessingAction", true);
-
       let payload = {
         id: this.id,
-        freelancer_addr: this.freelancer_addr,
-        freelancer_email: this.freelancer_email
+        proportion: this.proportion_value
       };
-
-      this.$store.dispatch("setFreelancerAction", payload);
-      this.mode = 0
-    },
-    submitComplete() {
       this.$store.dispatch("setWeb3ProcessingAction", true);
-      this.$store.dispatch("completeOrderAction", this.id);
-    },
-    submitUnlock() {
-      this.$store.dispatch("setWeb3ProcessingAction", true);
-      this.$store.dispatch("unlockOrderOwnerAction", this.id);
+      this.$store.dispatch("moderRemoveOrderAction", payload);
+      this.mode = 0;
     },
     cancelEditing() {
       this.setData(this.order);
@@ -610,6 +546,10 @@ export default {
     validAddress: function(address) {
       let re = /^0x[a-fA-F0-9]{40}$/;
       return re.test(address);
+    },
+    validProportion: function(value) {
+      let re = /^([0-9]|([1-9][0-9])|100)$/;
+      return re.test(value);
     }
   },
   watch: {
@@ -647,35 +587,12 @@ export default {
         this.contact_error_flag = false;
       }
     },
-    budget: function(newValue, oldValue) {
-      if (isNaN(newValue) || newValue <= 0) {
-        this.budget_error_flag = true;
+    proportion_value: function(newValue, oldValue) {
+      if (!this.validProportion(newValue)) {
+        this.proportion_error_flag = true;
       } else {
-        this.budget_error_flag = false;
+        this.proportion_error_flag = false;
       }
-    },
-    freelancer_addr: function(newValue, oldValue) {
-      if (!this.validAddress(newValue)) this.freelancer_addr_error_flag = true;
-      else this.freelancer_addr_error_flag = false;
-    },
-    freelancer_email: function(newValue, oldValue) {
-      if (!this.validLength(newValue)) {
-        this.freelancer_email_invalid_str =
-          "The email length must be less than 33 characters";
-        this.freelancer_email_invalid_flag = true;
-      } else if (!this.validEmail(newValue)) {
-        this.freelancer_email_invalid_str = "Valid email required";
-        this.freelancer_email_invalid_flag = true;
-      } else this.freelancer_email_invalid_flag = false;
-
-      if (newValue !== this.freelancer_email_repeat)
-        this.freelancer_email_different_flag = true;
-      else this.freelancer_email_different_flag = false;
-    },
-    freelancer_email_repeat: function(newValue, oldValue) {
-      if (newValue !== this.freelancer_email)
-        this.freelancer_email_different_flag = true;
-      else this.freelancer_email_different_flag = false;
     }
   }
 };

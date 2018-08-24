@@ -38,6 +38,7 @@ export default {
   computed: mapState({
     web3Instance: state => state.web3Instance,
     contractInstance: state => state.contractInstance,
+    coinbase: state => state.web3State.coinbase,
     LogModerAdded: state => state.contractEvents.LogModerAdded,
     LogModerRemoved: state => state.contractEvents.LogModerRemoved,
     LogOrderCreated: state => state.contractEvents.LogOrderCreated,
@@ -55,6 +56,10 @@ export default {
     },
     contractInstance: function(newInstance, oldInstance) {
       this.dispatchGetOrdersListAction()
+      this.dispatchSetContractRolesActions()
+    },
+    coinbase: function(newInstance, oldInstance) {
+      this.dispatchSetContractRolesActions()
     },
     LogModerAdded: function(newInstance, oldInstance) {
       if (this.logModerAddedEvent) this.logModerAddedEvent.stopWatching()
@@ -133,6 +138,10 @@ export default {
     dispatchGetContractAction: function () {
       console.log("[DEBUG] getContractAction dispatched from App.vue");
       this.$store.dispatch("getContractAction");
+    },
+    dispatchSetContractRolesActions: function() {
+      console.log("[DEBUG] setContractRolesActions dispatched from App.vue")
+      this.$store.dispatch("setContractRolesActions")
     },
     dispatchUpdateSingleOrderAction: function(id) {
       console.log("[DEBUG] updateSingleOrderAction dispatched from App.vue:", id);

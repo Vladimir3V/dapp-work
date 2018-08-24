@@ -10,6 +10,8 @@ let state = {
     web3Instance: null,
     ipfsInstance: null,
     contractInstance: null,
+    contractModer: false,
+    contractOwner: false,
     contractEvents: {
         LogModerAdded: null,  // address indexed moder
         LogModerRemoved: null,  // address indexed moder
