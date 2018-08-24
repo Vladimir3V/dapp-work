@@ -523,10 +523,10 @@ export default {
 
       this.$store.dispatch("setWeb3ProcessingAction", true);
 
-      if (this.file) {
+      if (this.file_new) {
         let reader = new window.FileReader();
         reader.onloadend = () => this.submitEditingContinue(reader);
-        reader.readAsArrayBuffer(this.file);
+        reader.readAsArrayBuffer(this.file_new);
       } else {
         this.submitEditingContinue(null);
       }

@@ -12,6 +12,8 @@ let state = {
     contractInstance: null,
     contractModer: false,
     contractOwner: false,
+    contractProfit: 0,
+    contractPaused: false,
     contractEvents: {
         LogModerAdded: null,  // address indexed moder
         LogModerRemoved: null,  // address indexed moder
@@ -28,7 +30,9 @@ let state = {
         LogOrderUnlockedByFreelancer: null,  // uint indexed id
         LogOrderCompleted: null,  // uint indexed id
         LogOrderRemoved: null,  // uint indexed id, address indexed removedBy
-        LogOrderFreelancerAdded: null // uint indexed id, address indexed freelancer, bytes32 indexed freelanerEmail
+        LogOrderFreelancerAdded: null, // uint indexed id, address indexed freelancer, bytes32 indexed freelanerEmail
+        Pause: null,
+        Unpause: null
     },
     orders: {}
 }

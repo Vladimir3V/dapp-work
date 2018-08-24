@@ -1,5 +1,5 @@
 <template>
-    <div class="home">
+    <div class="moder-orders">
 
       <div class="container">
 
@@ -123,10 +123,7 @@ export default {
       return _.orderBy(this.filteredOrders, "id", "desc");
     },
     myAddress: state => state.web3State.coinbase
-  }),
-  methods: {
-    filterOrders() {}
-  }
+  })
 };
 </script>
 

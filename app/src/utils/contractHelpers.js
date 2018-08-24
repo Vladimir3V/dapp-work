@@ -8,7 +8,7 @@ export async function getAllOrders() {
     let orders_length = await dappWork.getOrdersCount()
     let orders = {}
     for (let i = 0; i < orders_length; i++) {
-        let [id, title, 
+        let [id, title,
             owner_addr, owner_email, owner_contact,
             freelancer_addr, freelancer_email,
             budget, text_hash, file_hash,
@@ -23,14 +23,14 @@ export async function getAllOrders() {
         budget = parseFloat(web3.fromWei(budget, "ether"))
 
         orders[id] = {
-            id, title, 
+            id, title,
             owner_addr, owner_email, owner_contact,
             freelancer_addr, freelancer_email,
             budget, text_hash, file_hash,
             owner_lock, freelancer_lock
         }
     }
-    
+
     // console.log("[LOG] New orders:", orders)
 
     return orders
@@ -41,11 +41,11 @@ export async function getOrder(_id) {
     let dappWork = store.state.contractInstance()
 
     let index = await dappWork.getOrderIndex(_id)
-    let [id, title, 
-            owner_addr, owner_email, owner_contact,
-            freelancer_addr, freelancer_email,
-            budget, text_hash, file_hash,
-            owner_lock, freelancer_lock
+    let [id, title,
+        owner_addr, owner_email, owner_contact,
+        freelancer_addr, freelancer_email,
+        budget, text_hash, file_hash,
+        owner_lock, freelancer_lock
     ] = await dappWork.ordersList.call(index)
 
     id = id.toNumber()
@@ -56,14 +56,14 @@ export async function getOrder(_id) {
     budget = parseFloat(web3.fromWei(budget, "ether"))
 
     let order = {
-        id, title, 
+        id, title,
         owner_addr, owner_email, owner_contact,
         freelancer_addr, freelancer_email,
         budget, text_hash, file_hash,
         owner_lock, freelancer_lock
     }
-    
-    return order  
+
+    return order
 }
 
 export async function createOrder(payload) {
@@ -72,16 +72,20 @@ export async function createOrder(payload) {
         let dappWork = store.state.contractInstance()
         let ipfs = store.state.ipfsInstance
         let account = store.state.web3State.coinbase
-    
-        let {title, email_contact, additional_contact,
-            description, file_buffer, budget} = payload
-        
+
+        let { title, email_contact, additional_contact,
+            description, file_buffer, budget } = payload
+
+        title = web3.fromAscii(title)
+        email_contact = web3.fromAscii(email_contact)
+        additional_contact = web3.fromAscii(additional_contact)
+
         budget = web3.toWei(budget, 'ether')
 
         let add_descr_response = await ipfs.add(Buffer.from(description))
         console.log("[DEBUG] Description added to IPFS:", add_descr_response)
         let text_hash = add_descr_response[0].hash
-        
+
         let file_hash = ""
         if (file_buffer) {
             let add_file_response = await ipfs.add(Buffer.from(file_buffer))
@@ -89,11 +93,13 @@ export async function createOrder(payload) {
             file_hash = add_file_response[0].hash
         }
 
-        await dappWork.createOrder(title, email_contact, additional_contact, 
-            text_hash, file_hash, {from: account, value: budget, gas: 3000000});
+        await dappWork.createOrder(title, email_contact, additional_contact,
+            text_hash, file_hash, { from: account, value: budget, gas: 3000000 });
 
-        console.log("[DEBUG] Order created:", {title, email_contact, additional_contact, 
-            text_hash, file_hash, account, budget})
+        console.log("[DEBUG] Order created:", {
+            title, email_contact, additional_contact,
+            text_hash, file_hash, account, budget
+        })
 
         return dappWork.LogOrderCreated
     } catch (err) {
@@ -108,11 +114,15 @@ export async function modifyOrder(payload) {
         let dappWork = store.state.contractInstance()
         let ipfs = store.state.ipfsInstance
         let account = store.state.web3State.coinbase
-    
-        let {id, title, email_contact, additional_contact,
+
+        let { id, title, email_contact, additional_contact,
             text_hash, description,
             file_hash, file_buffer,
-            budget} = payload
+            budget } = payload
+
+        title = web3.fromAscii(title)
+        email_contact = web3.fromAscii(email_contact)
+        additional_contact = web3.fromAscii(additional_contact)
         
         let params = {
             from: account,
@@ -128,14 +138,14 @@ export async function modifyOrder(payload) {
             console.log("[DEBUG] Description added to IPFS:", add_descr_response)
             text_hash = add_descr_response[0].hash
         }
-        
+
         if (file_buffer) {
             let add_file_response = await ipfs.add(Buffer.from(file_buffer))
             console.log("[DEBUG] File added to IPFS:", add_file_response)
             file_hash = add_file_response[0].hash
         }
 
-        await dappWork.modifyOrder(id, title, email_contact, additional_contact, 
+        await dappWork.modifyOrder(id, title, email_contact, additional_contact,
             text_hash, file_hash, params);
 
         console.log("[DEBUG] Order MODIFIED:", payload)
@@ -149,16 +159,20 @@ export async function modifyOrder(payload) {
 
 export async function moderModifyOrder(payload) {
     try {
-        let web3 = store.state.web3Instance()
         let dappWork = store.state.contractInstance()
         let ipfs = store.state.ipfsInstance
         let account = store.state.web3State.coinbase
-    
-        let {id, title, email_contact, additional_contact,
+
+        let { id, title, email_contact, additional_contact,
             text_hash, description,
             file_hash, file_buffer,
-            owner_lock, freelancer_lock} = payload
-        
+            owner_lock, freelancer_lock } = payload
+
+        title = web3.fromAscii(title)
+        email_contact = web3.fromAscii(email_contact)
+        additional_contact = web3.fromAscii(additional_contact)
+    
+
         let params = {
             from: account,
             gas: 3000000
@@ -169,14 +183,14 @@ export async function moderModifyOrder(payload) {
             console.log("[DEBUG] Description added to IPFS:", add_descr_response)
             text_hash = add_descr_response[0].hash
         }
-        
+
         if (file_buffer) {
             let add_file_response = await ipfs.add(Buffer.from(file_buffer))
             console.log("[DEBUG] File added to IPFS:", add_file_response)
             file_hash = add_file_response[0].hash
         }
 
-        await dappWork.moderModifyOrder(id, title, email_contact, additional_contact, 
+        await dappWork.moderModifyOrder(id, title, email_contact, additional_contact,
             text_hash, file_hash, owner_lock, freelancer_lock, params);
 
         console.log("[DEBUG] Order MODIFIED:", payload)
@@ -193,9 +207,9 @@ export async function removeOrder(id) {
         let dappWork = store.state.contractInstance()
         let account = store.state.web3State.coinbase
 
-        await dappWork.removeOrder(id, {from: account, gas: 3000000});
+        await dappWork.removeOrder(id, { from: account, gas: 3000000 });
 
-        console.log("[DEBUG] Order REMOVED:", {id})
+        console.log("[DEBUG] Order REMOVED:", { id })
 
         return dappWork.LogOrderRemoved
     } catch (err) {
@@ -209,9 +223,9 @@ export async function moderRemoveOrder(payload) {
         let dappWork = store.state.contractInstance()
         let account = store.state.web3State.coinbase
 
-        let {id, proportion} = payload
+        let { id, proportion } = payload
 
-        await dappWork.moderRemoveOrder(id, proportion, {from: account, gas: 3000000});
+        await dappWork.moderRemoveOrder(id, proportion, { from: account, gas: 3000000 });
 
         console.log("[DEBUG] Order REMOVED:", payload)
 
@@ -227,9 +241,9 @@ export async function completeOrder(id) {
         let dappWork = store.state.contractInstance()
         let account = store.state.web3State.coinbase
 
-        await dappWork.completeOrder(id, {from: account, gas: 3000000});
+        await dappWork.completeOrder(id, { from: account, gas: 3000000 });
 
-        console.log("[DEBUG] Order COMPLETED:", {id})
+        console.log("[DEBUG] Order COMPLETED:", { id })
 
         return dappWork.LogOrderCompleted
     } catch (err) {
@@ -243,10 +257,14 @@ export async function setOrderFreelancer(payload) {
         let dappWork = store.state.contractInstance()
         let account = store.state.web3State.coinbase
 
-        let {id, freelancer_addr, freelancer_email} = payload
+        let { id, freelancer_addr, freelancer_email } = payload
+
+        freelancer_addr = web3.fromAscii(freelancer_addr)
+        freelancer_email = web3.fromAscii(freelancer_email)
+
 
         await dappWork.setOrderFreelancer(id, freelancer_addr, freelancer_email,
-            {from: account, gas: 3000000});
+            { from: account, gas: 3000000 });
 
         console.log("[DEBUG] Freelancer set:", payload)
 
@@ -262,9 +280,9 @@ export async function unlockOrderOwner(id) {
         let dappWork = store.state.contractInstance()
         let account = store.state.web3State.coinbase
 
-        await dappWork.unlockOrderOwner(id, {from: account, gas: 3000000});
+        await dappWork.unlockOrderOwner(id, { from: account, gas: 3000000 });
 
-        console.log("[DEBUG] Order UNLOCKED by Owner:", {id})
+        console.log("[DEBUG] Order UNLOCKED by Owner:", { id })
 
         return dappWork.LogOrderUnlockedByOwner
     } catch (err) {
@@ -278,9 +296,9 @@ export async function unlockOrderFreelancer(id) {
         let dappWork = store.state.contractInstance()
         let account = store.state.web3State.coinbase
 
-        await dappWork.unlockOrderFreelancer(id, {from: account, gas: 3000000});
+        await dappWork.unlockOrderFreelancer(id, { from: account, gas: 3000000 });
 
-        console.log("[DEBUG] Order UNLOCKED by Freelancer:", {id})
+        console.log("[DEBUG] Order UNLOCKED by Freelancer:", { id })
 
         return dappWork.LogOrderUnlockedByFreelancer
     } catch (err) {
@@ -292,7 +310,7 @@ export async function unlockOrderFreelancer(id) {
 export async function checkAccountRoles() {
     try {
         if (!store.state.contractInstance) {
-            console.warn("[WARNING] Contract Instance not initialized to check roles:", dappWork)
+            console.warn("[WARNING] in checkAccountRoles => Contract Instance not initialized to check roles:", dappWork)
             return null
         }
 
@@ -306,12 +324,97 @@ export async function checkAccountRoles() {
         if (isOwner) isModer = true
         else isModer = await dappWork.moders.call(account)
 
-        let res = {isOwner, isModer}
+        let res = { isOwner, isModer }
         console.log("[DEBUG] Account roles checked:", res)
 
         return res
     } catch (err) {
         console.error("[ERROR] in checkAccountRoles():", err)
         return null
+    }
+}
+
+export async function getContractProfit() {
+    try {
+        let web3 = store.state.web3Instance()
+        let dappWork = store.state.contractInstance()
+        let profit = await dappWork.contractProfit.call()
+        profit = parseFloat(web3.fromWei(profit, "ether"))
+        return profit
+    } catch (err) {
+        console.error("[ERROR] in getContractProfit():", err)
+        return null
+    }
+}
+
+export async function withdrawContractProfit(amount) {
+    try {
+        let web3 = store.state.web3Instance()
+        let dappWork = store.state.contractInstance()
+        let account = store.state.web3State.coinbase
+        amount = web3.toWei(amount, "ether")
+        await dappWork.withdrawContractProfit(amount, { from: account, gas: 3000000 })
+    } catch (err) {
+        console.error("[ERROR] in checkAccountRoles():", err)
+    }
+}
+
+export async function addModer(address) {
+    try {
+        let dappWork = store.state.contractInstance()
+        let account = store.state.web3State.coinbase
+
+        await dappWork.addModer(address, { from: account, gas: 3000000 })
+        console.log("[DEBUG] Moderator ADDED:", address)
+    } catch (err) {
+        console.error("[ERROR] in addModer():", err)
+    }
+}
+
+export async function removeModer(address) {
+    try {
+        let dappWork = store.state.contractInstance()
+        let account = store.state.web3State.coinbase
+
+        await dappWork.removeModer(address, { from: account, gas: 3000000 })
+        console.log("[DEBUG] Moderator REMOVED:", address)
+    } catch (err) {
+        console.error("[ERROR] in removeModer():", err)
+    }
+}
+
+export async function getPauseStatus() {
+    try {
+        let dappWork = store.state.contractInstance()
+        let status = await dappWork.paused.call()
+        console.log("[DEBUG] Contract Pause status:", status)
+        return status
+    } catch (err) {
+        console.error("[ERROR] in getPauseStatus():", err)
+        return null
+    }
+}
+
+export async function pause() {
+    try {
+        let dappWork = store.state.contractInstance()
+        let account = store.state.web3State.coinbase
+
+        await dappWork.pause({ from: account, gas: 3000000 })
+        console.log("[DEBUG] Contract PAUSED")
+    } catch (err) {
+        console.error("[ERROR] in pause():", err)
+    }
+}
+
+export async function unpause() {
+    try {
+        let dappWork = store.state.contractInstance()
+        let account = store.state.web3State.coinbase
+
+        await dappWork.unpause({ from: account, gas: 3000000 })
+        console.log("[DEBUG] Contract UNPAUSED")
+    } catch (err) {
+        console.error("[ERROR] in unpause():", err)
     }
 }

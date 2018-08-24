@@ -32,7 +32,9 @@ export default {
       logOrderUnlockedByFreelancerEvent: null,
       logOrderCompletedEvent: null,
       logOrderRemovedEvent: null,
-      logOrderFreelancerAddedEvent: null
+      logOrderFreelancerAddedEvent: null,
+      pause: null,
+      unpause: null
     }
   },
   computed: mapState({
@@ -48,7 +50,9 @@ export default {
     LogOrderUnlockedByFreelancer: state => state.contractEvents.LogOrderUnlockedByFreelancer,
     LogOrderCompleted: state => state.contractEvents.LogOrderCompleted,
     LogOrderRemoved: state => state.contractEvents.LogOrderRemoved,
-    LogOrderFreelancerAdded: state => state.contractEvents.LogOrderFreelancerAdded
+    LogOrderFreelancerAdded: state => state.contractEvents.LogOrderFreelancerAdded,
+    Pause: state => state.contractEvents.Pause,
+    Unpause: state => state.contractEvents.Unpause,
   }),
   watch: {
     web3Instance: function (newInstance, oldInstance) {
@@ -57,6 +61,7 @@ export default {
     contractInstance: function(newInstance, oldInstance) {
       this.dispatchGetOrdersListAction()
       this.dispatchSetContractRolesActions()
+      this.dispatchUpdatePauseStatusAction()
     },
     coinbase: function(newInstance, oldInstance) {
       this.dispatchSetContractRolesActions()
@@ -132,6 +137,22 @@ export default {
         if (err) console.error("[ERROR] App.vue logOrderFreelancerAddedEvent:", err)
         else this.dispatchUpdateSingleOrderAction(res.args.id)
       })
+    },
+    Pause: function(newInstance, oldInstance) {
+      if (this.pause) this.pause.stopWatching()
+      this.pause = newInstance()
+      this.pause.watch((err, res) => {
+        if (err) console.error("[ERROR] App.vue pause:", err)
+        else this.dispatchUpdatePauseStatusAction()
+      })
+    },
+    Unpause: function(newInstance, oldInstance) {
+      if (this.unpause) this.unpause.stopWatching()
+      this.unpause = newInstance()
+      this.unpause.watch((err, res) => {
+        if (err) console.error("[ERROR] App.vue pause:", err)
+        else this.dispatchUpdatePauseStatusAction()
+      })
     }
   },
   methods: {
@@ -148,11 +169,16 @@ export default {
       this.$store.dispatch("updateSingleOrderAction", id)
     },
     dispatchRemoveSingleOrderAction: function(id) {
+      console.log("[DEBUG] removeSingleOrderAction dispatched from App.vue");
       this.$store.dispatch("removeSingleOrderAction", id)
     },
     dispatchGetOrdersListAction: function() {
       console.log("[DEBUG] getOrdersListAction dispatched from App.vue");
       this.$store.dispatch("getOrdersListAction")
+    },
+    dispatchUpdatePauseStatusAction: function() {
+      console.log("[DEBUG] updatePauseStatusAction dispatched from App.vue");
+      this.$store.dispatch("updatePauseStatusAction")
     }
   }
 };
