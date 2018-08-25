@@ -6,6 +6,8 @@ DappWork is decentralized labor exchange [Smart Contract](https://en.wikipedia.o
 
 - [Architecture](#architecture)
 - [Prerequisites and Setting Up the Enviroment](#prerequisites-and-setting-up-the-enviroment)
+- [Some Notes for Reviewers](#some-notes-for-reviewers)
+- [Demo in Rinkeby Test Network](#demo-in-rinkeby-test-network)
 - [Getting Started](#getting-started)
 - [Testing](#testing)
 - [Avoiding Common Attacks](#avoiding-common-attacks)
@@ -76,6 +78,25 @@ The contract owner is a moderator with additional features:
 * Setup a new contract address through the Register contract.
 * Pass the ownership of the contract to another address.
 
+## Some Notes for Reviewers
+
+### EthPM
+
+I used [OpenZeppelin Solidity](https://github.com/OpenZeppelin/openzeppelin-solidity) libraries through npm, instead of EthPM, because they are outdated there.
+
+### IPFS
+
+[IPFS](https://ipfs.io/) is used to store orders descriptions and files. But it is kinda unstable thing. Sometimes description can be missed or files not opened (hope you won't experience this) and uploading the file to IPFS through public API takes some time... Please, be patient here and trust my "loading" circles. :)
+
+## Demo in Rinkeby Test Network
+
+The contracts are deployed in Rinkeby Test Network.
+The contracts addresses are listed in [deployed_addresses.txt](deployed_addresses.txt)
+
+The Web App is available on:
+* Github Pages: https://drag0no.github.io/dapp-work
+* IPFS: https://ipfs.io/ipfs/QmQTDwtPPzyHmEyUXJkUB9aqEmKgVeA8MC7BzPXuWbPYrh
+* IPFS+ENS: Comming Soon
 
 ## Prerequisites and Setting Up the Enviroment
 
