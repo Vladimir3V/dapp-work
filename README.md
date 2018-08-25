@@ -96,12 +96,11 @@ The contracts addresses are listed in [deployed_addresses.txt](deployed_addresse
 The Web App is available on:
 * Github Pages: https://drag0no.github.io/dapp-work
 * IPFS: https://ipfs.io/ipfs/QmQTDwtPPzyHmEyUXJkUB9aqEmKgVeA8MC7BzPXuWbPYrh
-* IPFS+ENS: Comming Soon
+* IPFS+ENS: http://dapp-work.thisisme.eth (You will need the [ENS Content Resolver](https://chrome.google.com/webstore/detail/ens-content-resolver/ifgfopmoihnnicfgcpafgibiinfkodjf) extension)
 
 ## Prerequisites and Setting Up the Enviroment
 
-* **MetaMask Extension** for your browser
-You can get it here: https://metamask.io/
+* **MetaMask Extension** for your browser (You can get it here: https://metamask.io/)
 
 * **Node.js v8.11.4+**
 ```
@@ -175,7 +174,7 @@ If you got the error, install it by executing command:
 ```
 7. Open the link http://localhost:8080 and feel free to play around!
 
-Loading files to IPFS through public node can take some time, please be patient while creating the order or modifying order.
+Loading files to IPFS through public node can take some time, please be patient while creating the order or modifying it.
 
 8. (OPTIONAL) You can populate the app with the sample data. 
 

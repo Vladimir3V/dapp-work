@@ -1,6 +1,5 @@
 # Mine
 *.log
-*.txt
 
 # Vue Defaults
 .DS_Store

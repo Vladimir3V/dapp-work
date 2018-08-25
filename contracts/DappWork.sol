@@ -81,19 +81,33 @@ contract DappWork is Pausable
 
     // Events to track the orders changes for apropriate functions
     // Self-explained names :)
-    event LogOrderCreated(uint indexed id, bytes32 title, 
-                            address indexed owner, bytes32 indexed ownerEmail,
-                            uint budget, 
-                            string ipfsTextDescription, string ipfsDetailsFile);
-    event LogOrderModified(uint indexed id, address indexed modifiedBy,
-                            bytes32 title, bytes32 indexed ownerEmail, bytes32 ownerAdditionalContact,
-                            uint budget, string ipfsTextDescription, string ipfsDetailsFile,
-                            bool ownerLock, bool freelancerLock);
+    event LogOrderCreated(
+        uint indexed id, 
+        bytes32 title, 
+        address indexed owner,
+        bytes32 indexed ownerEmail,
+        uint budget, 
+        string ipfsTextDescription,
+        string ipfsDetailsFile);
+    event LogOrderModified(
+        uint indexed id, 
+        address indexed modifiedBy,
+        bytes32 title, 
+        bytes32 indexed ownerEmail, 
+        bytes32 ownerAdditionalContact,
+        uint budget, 
+        string ipfsTextDescription, 
+        string ipfsDetailsFile,
+        bool ownerLock, 
+        bool freelancerLock);
     event LogOrderUnlockedByOwner(uint indexed id);
     event LogOrderUnlockedByFreelancer(uint indexed id);
     event LogOrderCompleted(uint indexed id);
     event LogOrderRemoved(uint indexed id, address indexed removedBy);
-    event LogOrderFreelancerAdded(uint indexed id, address indexed freelancer, bytes32 indexed freelanerEmail);
+    event LogOrderFreelancerAdded(
+        uint indexed id, 
+        address indexed freelancer, 
+        bytes32 indexed freelanerEmail);
     
     /**
     * @dev Requirement the caller is the CONTRACT owner or the moderator
@@ -280,9 +294,13 @@ contract DappWork is Pausable
     * @param _ipfsTextDescription IPFS hash of the order's description
     * @param _ipfsDetailsFile IPFS hash of the file with detailed order information
     */
-    function createOrder(bytes32 _title, 
-                         bytes32 _ownerContactEmail, bytes32 _ownerContactAdditional,
-                         string _ipfsTextDescription, string _ipfsDetailsFile)
+    function createOrder(
+        bytes32 _title,
+        bytes32 _ownerContactEmail,
+        bytes32 _ownerContactAdditional,
+        string _ipfsTextDescription,
+        string _ipfsDetailsFile
+    )
         public payable whenNotPaused
     {
         require(msg.value >= minBudget, "Minimal budget is not fulfilled");

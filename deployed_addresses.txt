@@ -1,0 +1,4 @@
+Rinkeby Test Network
+
+DappWork: 0x2a1c7ac065eebc36de37b9836580f6d18421899d
+DappWorkRegister: 0xaab4da3baa6a94aa09015219cf4fed99bc831d1a
