@@ -25,7 +25,6 @@ let state = {
                                 // bytes32 title, bytes32 indexed ownerEmail, bytes32 ownerAdditionalContact,
                                 // uint budget, string ipfsTextDescription, string ipfsDetailsFile,
                                 // bool ownerLock, bool freelancerLock)
-        LogOrderStarted: null,  // uint indexed id, address indexed freelancer, bytes32 indexed freelancerEmail
         LogOrderUnlockedByOwner: null,  // uint indexed id
         LogOrderUnlockedByFreelancer: null,  // uint indexed id
         LogOrderCompleted: null,  // uint indexed id

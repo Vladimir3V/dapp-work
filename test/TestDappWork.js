@@ -1,5 +1,12 @@
 const DappWork = artifacts.require("DappWork");
 
+// These tests cover most of the possible scenarios of the current contract.
+// You can understand it by the amount of my tests. :)
+// Most of the tests are self-explained by their names.
+// I added the comments to the tests where additional explanation is needed.
+// [REVERT] in the test means that the test was passed if the attempt to call the function was reverted.
+
+// Function to check that the call was reverted.
 async function hasReverted(contractCall) {
   try {
     await contractCall;
@@ -9,22 +16,50 @@ async function hasReverted(contractCall) {
   }
 }
 
+// Constants that will be used in tests
+
+// Zero address to check unassigned addresses
+const zero_address = "0x0000000000000000000000000000000000000000";
+
+// Sample data for the order
+const order01_title = "Blockchain developer needed";
+const order01_email = "eth_customer@gmail.com";
+const order01_contact = "skype: eth_b0ss";
+
+// Sample data for another order
+const order02_title = "Smart guy needed";
+const order02_email = "cool_guy@yahoo.com";
+const order02_contact = "telegram: @c00l_guy";
+
+// Shared data for both orders
+const text_hash = "QmRKN4vhtxbS3qURZBhpD35eaQ81bmhqoJ3Su2Y2ahN6gn";
+const file_hash = "QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG";
+
+const freelancer_contact = "freelance_do@gmail.com";
+
+// The budget of both contracts
+const price = web3.toWei(1, 'ether');
+
+// The fee that we will collect from each completed order (in percentage)
+const house_edge = 1;  // means 1% of each completed order
+
+// Current contract profit (from fees)
+let current_contract_profit = 0;
+
 contract('DappWork', accounts => {
+
+    // Deploying the new contract
     let dappWork;
-    const house_edge = 1;
-
-    // beforeEach(async () => {
-    //   dappWork = await DappWork.deployed();
-    // });
-
     before(async () => {
         dappWork = await DappWork.new(house_edge, {from: accounts[0]});
     });
 
+    // Check the contract owner
     it("[OK] Check the 'owner' accounts#0)", async () => {
         assert.equal(await dappWork.owner.call(), accounts[0]);
     });
 
+    // Adding the new moders and check their addresses
     it("[OK] Add three moders (accounts#1-3) from 'owner' account#0", async () => {
         await dappWork.addModer(accounts[1], {from: accounts[0]});
         await dappWork.addModer(accounts[2], {from: accounts[0]});
@@ -32,6 +67,18 @@ contract('DappWork', accounts => {
         assert.equal(await dappWork.moders.call(accounts[1]), true);
         assert.equal(await dappWork.moders.call(accounts[2]), true);
         assert.equal(await dappWork.moders.call(accounts[3]), true);
+    });
+
+    it("[REVERT] Add moder (account#3) from 'unknown' account#4", async () => {
+        assert.ok( await hasReverted(
+            dappWork.addModer(accounts[3], {from: accounts[4]})
+        ));
+    });
+
+    it("[REVERT] Add moder (account#3) from 'moder' account#1", async () => {
+        assert.ok( await hasReverted(
+            dappWork.addModer(accounts[3], {from: accounts[1]})
+        ));
     });
 
     it("[REVERT] Remove moder (account#3) from 'unknown' account#4", async () => {
@@ -51,38 +98,7 @@ contract('DappWork', accounts => {
         assert.equal(await dappWork.moders.call(accounts[3]), false);
     });
 
-    it("[REVERT] Add moder (account#3) from 'unknown' account#4", async () => {
-        assert.ok( await hasReverted(
-            dappWork.addModer(accounts[3], {from: accounts[4]})
-        ));
-    });
-
-    it("[REVERT] Add moder (account#3) from 'moder' account#1", async () => {
-        assert.ok( await hasReverted(
-            dappWork.addModer(accounts[3], {from: accounts[1]})
-        ));
-    });
-
-    const zero_address = "0x0000000000000000000000000000000000000000";
-
-    const order01_title = "Blockchain developer needed";
-    const order01_email = "eth_customer@gmail.com";
-    const order01_contact = "skype: eth_b0ss";
-    
-    const order02_title = "Smart guy needed";
-    const order02_email = "cool_guy@yahoo.com";
-    const order02_contact = "telegram: @c00l_guy";
-
-    const text_hash = "QmRKN4vhtxbS3qURZBhpD35eaQ81bmhqoJ3Su2Y2ahN6gn";
-    const file_hash = "QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG";
-
-    const freelancer_contact = "freelance_do@gmail.com";
-
-    const price = web3.toWei(1, 'ether');
-
-    let current_contract_profit = 0;
-
-
+    // Revert attempt to create order with the budget below allowed one
     it("[REVERT] Create order with low price", async () => {
         assert.ok(await hasReverted(
             dappWork.createOrder(order01_title, 
@@ -132,9 +148,11 @@ contract('DappWork', accounts => {
         await dappWork.createOrder(order02_title, order02_email, order02_contact, 
             text_hash, file_hash, {from: accounts[3], value: price});
         
+        // Check the current amount of orders in the contract
         let orders_length = await dappWork.getOrdersCount();
         assert.equal(orders_length, 2);
-
+        
+        // Read full order info by calling it by index
         let [o1_id, o1_title,
             o1_owner_addr, o1_owner_email, o1_owner_contact,
             o1_freelancer_addr, o1_freelancer_email,
@@ -145,7 +163,9 @@ contract('DappWork', accounts => {
         o1_owner_email = web3.toUtf8(o1_owner_email);
         o1_owner_contact = web3.toUtf8(o1_owner_contact);
         o1_freelancer_email = web3.toUtf8(o1_freelancer_email);
-            
+        
+        // Check the read order info with initial parameters
+        // Its id must be "1"
         assert.equal(o1_id, 1);
         assert.equal(o1_title, order01_title);
         assert.equal(o1_owner_addr, accounts[3]);
@@ -159,6 +179,7 @@ contract('DappWork', accounts => {
         assert.equal(o1_owner_lock, false);
         assert.equal(o1_freelancer_lock, false);
 
+        // Same for the second order
         let [o2_id, o2_title,
             o2_owner_addr, o2_owner_email, o2_owner_contact,
             o2_freelancer_addr, o2_freelancer_email,
@@ -170,6 +191,7 @@ contract('DappWork', accounts => {
         o2_owner_contact = web3.toUtf8(o2_owner_contact);
         o2_freelancer_email = web3.toUtf8(o2_freelancer_email);
         
+        // Its id must be "2"
         assert.equal(o2_id, 2);
         assert.equal(o2_title, order02_title);
         assert.equal(o2_owner_addr, accounts[3]);
@@ -194,6 +216,7 @@ contract('DappWork', accounts => {
     it("[OK] Remove first order#1 from 'owner' account#3", async () => {
         await dappWork.removeOrder(1, {from: accounts[3]});
 
+        // After removing there should be only one order with id # 2
         let orders_length = await dappWork.getOrdersCount();
         assert.equal(orders_length, 1);
 
@@ -208,6 +231,7 @@ contract('DappWork', accounts => {
         o2_owner_contact = web3.toUtf8(o2_owner_contact);
         o2_freelancer_email = web3.toUtf8(o2_freelancer_email);
         
+        // Lets check it info. ID should be #2
         assert.equal(o2_id, 2);
         assert.equal(o2_title, order02_title);
         assert.equal(o2_owner_addr, accounts[3]);
@@ -232,7 +256,10 @@ contract('DappWork', accounts => {
     it("[OK] Modify second order#2 from 'owner' account#3", async () => {
         await dappWork.modifyOrder(2, order01_title, order01_email, order01_contact,
             text_hash, file_hash, {from: accounts[3], value: price*2});
-
+        
+        // Here instead of getting info about the order 
+        // by calling it by index from the array
+        // I'm testing getOrderById() function
         let [o2_title, o2_owner_addr, o2_owner_email, o2_owner_contact, 
             o2_freelancer_addr, o2_freelancer_email, 
             o2_budget, o2_ipfs_text, o2_ipfs_file, 

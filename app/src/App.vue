@@ -27,7 +27,6 @@ export default {
       logModerRemovedEvent: null,
       logOrderCreatedEvent: null,
       logOrderModifiedEvent: null,
-      logOrderStartedEvent: null,
       logOrderUnlockedByOwnerEvent: null,
       logOrderUnlockedByFreelancerEvent: null,
       logOrderCompletedEvent: null,
@@ -45,7 +44,6 @@ export default {
     LogModerRemoved: state => state.contractEvents.LogModerRemoved,
     LogOrderCreated: state => state.contractEvents.LogOrderCreated,
     LogOrderModified: state => state.contractEvents.LogOrderModified,
-    LogOrderStarted: state => state.contractEvents.LogOrderStarted,
     LogOrderUnlockedByOwner: state => state.contractEvents.LogOrderUnlockedByOwner,
     LogOrderUnlockedByFreelancer: state => state.contractEvents.LogOrderUnlockedByFreelancer,
     LogOrderCompleted: state => state.contractEvents.LogOrderCompleted,
@@ -87,14 +85,6 @@ export default {
       this.logOrderModifiedEvent = newInstance()
       this.logOrderModifiedEvent.watch((err, res) => {
         if (err) console.error("[ERROR] App.vue logOrderModifiedEvent:", err)
-        else this.dispatchUpdateSingleOrderAction(res.args.id)
-      })
-    },
-    LogOrderStarted: function(newInstance, oldInstance) {
-      if (this.logOrderStartedEvent) this.logOrderStartedEvent.stopWatching()
-      this.logOrderStartedEvent = newInstance()
-      this.logOrderStartedEvent.watch((err, res) => {
-        if (err) console.error("[ERROR] App.vue logOrderStartedEvent:", err)
         else this.dispatchUpdateSingleOrderAction(res.args.id)
       })
     },

@@ -1,6 +1,11 @@
 const DappWork = artifacts.require("DappWork");
 const DappWorkRegister = artifacts.require("DappWorkRegister");
 
+// Concept for this test file is the same as for the first one (check TestDappWork.js first)
+// Most of the tests are self-explained by their names.
+// [REVERT] in the test means that the test was passed if the attempt to call the function was reverted.
+
+// Function to check that the call was reverted.
 async function hasReverted(contractCall) {
   try {
     await contractCall;
@@ -14,6 +19,7 @@ contract("DappWorkRegister", accounts => {
     let register, dappWork01, dappWork02;
     const house_edge = 1;
 
+    // Deploying the new contracts
     before(async () => {
         dappWork01 = await DappWork.new(house_edge, {from: accounts[0]});
         dappWork02 = await DappWork.new(house_edge, {from: accounts[0]});

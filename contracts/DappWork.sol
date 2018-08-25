@@ -3,44 +3,84 @@ pragma solidity ^0.4.24;
 import "../app/node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "../app/node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
-contract DappWork is Pausable
+/**
+ * @title Decentralised Labor Exchange
+ * @author drag0no (Pavel Krot - krotpv@gmail.com)
+ */
+contract DappWork is Pausable 
 {
+    // Pausable inerhits Ownable
+    // Pausable - Circuit breaker template
+    // Ownable - For contract administration
+
+    // SafeMath library prevents overflow arithmetic operations
     using SafeMath for uint;
     
+    // Minimum required budget for the new order
     uint public constant minBudget = 0.01 ether;
+    // Fee from each completed order which will help me to buy some food
     uint public houseEdge;
+    // Current profit (from fees) that is in the contract
     uint public contractProfit;
     
+    // Address map of contract moderators (the owner of the CONTRACT is moderator by default)
     mapping(address => bool) public moders;
     
     struct Order {
-        uint id;
-        bytes32 title;
-        address owner;
-        bytes32 ownerContactEmail;
+        // Unique auto increment ID
+        uint id;  
+        // A small title of the order
+        bytes32 title;  
+        // Address of the ORDER creator (owner)
+        address owner;  
+        // Email of the ORDER owner (required for communication with a freelancer)
+        bytes32 ownerContactEmail;  
+        // Additional contact information
+        // Can be a skype or telegram account, for ex. "skype: username"
         bytes32 ownerContactAdditional;
+        // Freelancer address which needed to be assigned by the ORDER owner
         address freelancer;
+        // Freelancer contact email 
+        // Required for the moderators to resolve possible conflicts
         bytes32 freelancerContactEmail;
+        // Funds locked on the contract
         uint budget;
+        // IPFS hash of the order text description
         string ipfsTextDescription;
+        // IPFS hash of the file with the detailed order information (can be *.zip, *.doc... i.e. any file)
         string ipfsDetailsFile;
+        
+        // Locks for the double lock system. 
+        // Funds and order details can't be changed or removed when at leasе one lock is up
+        // Owner lock can be released by ORDER owner only
         bool ownerLock;
+        // Freelancer lock can be released by freelancer only 
         bool freelancerLock;
     }
     
+    // A helper structure for binding an entity to an array index
     struct OrderIndex {
         bool exists;
         uint index;
     }
     
+    // ID of the last created order (used for auto-incrementing)
     uint public lastOrderId;
+    // List of the orders
     Order[] public ordersList;
+    // Map to find index in the array by order ID
     mapping(uint => OrderIndex) private ordersListIndex;
+    // Map to find orders that belong to the specified address
     mapping(address => uint[]) private ordersByOwner;
+    // Two-dimensional map to find the order index for the specified address (a little bit complex, but the contract needs it, trust me :)
     mapping(address => mapping(uint => OrderIndex)) private ordersByOwnerIndex;
     
+    // Events to track the addresses of current moderators
     event LogModerAdded(address indexed moder);
     event LogModerRemoved(address indexed moder);
+
+    // Events to track the orders changes for apropriate functions
+    // Self-explained names :)
     event LogOrderCreated(uint indexed id, bytes32 title, 
                             address indexed owner, bytes32 indexed ownerEmail,
                             uint budget, 
@@ -49,13 +89,15 @@ contract DappWork is Pausable
                             bytes32 title, bytes32 indexed ownerEmail, bytes32 ownerAdditionalContact,
                             uint budget, string ipfsTextDescription, string ipfsDetailsFile,
                             bool ownerLock, bool freelancerLock);
-    event LogOrderStarted(uint indexed id, address indexed freelancer, bytes32 indexed freelancerEmail);
     event LogOrderUnlockedByOwner(uint indexed id);
     event LogOrderUnlockedByFreelancer(uint indexed id);
     event LogOrderCompleted(uint indexed id);
     event LogOrderRemoved(uint indexed id, address indexed removedBy);
     event LogOrderFreelancerAdded(uint indexed id, address indexed freelancer, bytes32 indexed freelanerEmail);
     
+    /**
+    * @dev Requirement the caller is the CONTRACT owner or the moderator
+    */
     modifier onlyModers() {
         bool isModer = moders[msg.sender] == true;
         bool isContractOwner = msg.sender == owner;
@@ -63,23 +105,39 @@ contract DappWork is Pausable
         _;
     }
     
+    /**
+    * @dev Requirement the order exists
+    * @param _id The order ID
+    */
     modifier orderExists(uint _id) {
         require(ordersListIndex[_id].exists, "Order does not exist");
         _;
     }
     
+    /**
+    * @dev Requirement the order exists and the caller is the ORDER owner
+    * @param _id The order ID
+    */
     modifier onlyOrderOwner(uint _id) {
         require(ordersListIndex[_id].exists, "Order does not exist");
         require(ordersList[ordersListIndex[_id].index].owner == msg.sender, "Not the order owner");
         _;
     }
 
+    /**
+    * @dev Requirement the order exists and the caller is the order freelancer
+    * @param _id The order ID
+    */
     modifier onlyOrderFreelancer(uint _id) {
         require(ordersListIndex[_id].exists, "Order does not exist");
         require(ordersList[ordersListIndex[_id].index].freelancer == msg.sender, "Not the order freelancer");
         _;
     }
     
+    /**
+    * @dev Requirement the order is not locked
+    * @param _id The order ID
+    */
     modifier orderNotLocked(uint _id) {
         require(ordersListIndex[_id].exists, "Order does not exist");
         require(ordersList[ordersListIndex[_id].index].ownerLock == false, "Locked by owner");
@@ -87,17 +145,29 @@ contract DappWork is Pausable
         _;
     }
     
+    /**
+    * @notice Setting up the fee (in the percentages) for completed orders while deploying contract
+    * @param _houseEdge The amount of fee (in the percentages) will be set for the contract
+    */
     constructor(uint _houseEdge) public
     {
         require(_houseEdge >= 0 && _houseEdge < 100, "House Edge shoud be between 0-100");
         houseEdge = _houseEdge;
     }
     
+    /**
+    * @dev Classic fallback function to prevent unnecessary funds transfers
+    */
     function() public payable 
     {
         revert("No plain funds transfer allowed");
     }
     
+    /**
+    * @notice Withdraw accumulated profit from the contract to buy some food. 
+    * The function is only available for the CONTRACT owner.
+    * @param amount The amount in (wei) to be withdrawn
+    */
     function withdrawContractProfit(uint amount) public onlyOwner
     {
         require(amount <= contractProfit, "Not enough funds on contract to withdraw");
@@ -105,18 +175,38 @@ contract DappWork is Pausable
         msg.sender.transfer(amount);
     }
 
+    /**
+    * @notice Add new moderator who helps us to maintain contract 
+    * and resolve conflicts between customers and freelancers. ;)
+    * The function is only available for the CONTRACT owner.
+    * @param _moder The address of the moderator to be added
+    */
     function addModer(address _moder) public onlyOwner
     {
         moders[_moder] = true;
         emit LogModerAdded(_moder);
     }
     
+    /**
+    * @notice Remove the moderator who was like a brother but betrayed us.
+    * The function is only available for the CONTRACT owner.
+    * @param _moder The address of the moderator to be removed
+    */
     function removeModer(address _moder) public onlyOwner
     {
         moders[_moder] = false;
         emit LogModerRemoved(_moder);
     }
     
+    /**
+    * @notice Get ther order information by its ID
+    * @dev Adding more parameters to returns leads to a "Stack too deep" error.
+    * That's why I unite ownerLock and freelancerLock to just "lock" variable.
+    * To get the full information about locks use the chain of functions:
+    * { fullData = ordersList.call(getOrderIndex(id)) }
+    * @param _id The order ID
+    * @return Order data where { lock = ownerLock || freelancerLock }
+    */
     function getOrderById(uint _id) public view orderExists(_id) 
         returns(bytes32 title,
                 address owner,
@@ -142,24 +232,38 @@ contract DappWork is Pausable
                 lock);
     }
 
-    function getOrderLockInfo(uint _id) public view orderExists(_id)
-        returns(bool ownerLock, bool freelancerLock)
-    {
-        uint _index = ordersListIndex[_id].index;
-        return (ordersList[_index].ownerLock, ordersList[_index].freelancerLock);
-    }
-
+    /**
+    * @notice Get the order's index by its ID
+    * @dev Use it in chain { fullData = ordersList.call(getOrderIndex(id)) }
+    * to get the full order information
+    * @param _id The order ID
+    * @return Order's index
+    */
     function getOrderIndex(uint _id) public view orderExists(_id)
         returns(uint index)
     {
         return ordersListIndex[_id].index;       
     }
-    
+        
+    /**
+    * @notice Get the number of the stored orders
+    * @dev Use it in the frontend to iterate over orders
+    * @return The number of orders
+    */
     function getOrdersCount() public view returns(uint)
     {
         return ordersList.length;
     }
 
+    /**
+    * @notice Create a new order
+    * @dev Use the event filtered by the creator address to get this order ID
+    * @param _title The short title of the order
+    * @param _ownerContactEmail Email of the order creator for communication (REQUIRED)
+    * @param _ownerContactAdditional Additional contact information of the order creator
+    * @param _ipfsTextDescription IPFS hash of the order's description
+    * @param _ipfsDetailsFile IPFS hash of the file with detailed order information
+    */
     function createOrder(bytes32 _title, 
                          bytes32 _ownerContactEmail, bytes32 _ownerContactAdditional,
                          string _ipfsTextDescription, string _ipfsDetailsFile)
@@ -200,6 +304,12 @@ contract DappWork is Pausable
             _ipfsTextDescription, _ipfsDetailsFile);
     }
     
+    /**
+    * @notice Remove the order by its ID. Funds return to the contract owner.
+    * @dev Function can be executed only by ORDER owner when the order is not locked
+    * @dev For the CONTRACT owner and moders there is another function to remove the order
+    * @param _id The order ID
+    */
     function removeOrder(uint _id) public onlyOrderOwner(_id) orderNotLocked(_id) whenNotPaused
     {
         (uint budget, ,) = _removeOrder(_id);
@@ -207,6 +317,14 @@ contract DappWork is Pausable
         emit LogOrderRemoved(_id, msg.sender);
     }
 
+    /**
+    * @notice Remove the order by its ID.
+    * Funds are split between the freelancer and the owner depends on the parameter.
+    * @dev Function can be executed only by CONTRACT owner and moders
+    * @param _id The order ID
+    * @param _percentProportionToOwner The percentage of the budget that will be 
+    * refunded to the order owner, the rest will go to the freelancer exclude a small fee
+    */
     function moderRemoveOrder(uint _id, uint _percentProportionToOwner) public onlyModers orderExists(_id)
     {
         require(_percentProportionToOwner >= 0 && _percentProportionToOwner <= 100, "Percent proportion should be between 0-100");
@@ -228,6 +346,11 @@ contract DappWork is Pausable
         emit LogOrderRemoved(_id, msg.sender);
     }
     
+    /**
+    * @dev Private function to remove duplicate code in public remove functions
+    * @param _id The order ID
+    * @return Amount of the budget, order owner address and freelancer address
+    */
     function _removeOrder(uint _id) private returns(uint _budget, address _owner, address _freelancer)
     {
         uint _index = ordersListIndex[_id].index;
@@ -253,6 +376,17 @@ contract DappWork is Pausable
         return (_budget, _owner, _freelancer);
     }
     
+    /**
+    * @notice Modify the existing order.
+    * @dev Function can be executed only by ORDER owner when the order is not locked
+    * @dev For the CONTRACT owner and moders there is another function to modify the order
+    * @param _id The order ID (it won't change)
+    * @param _title New title of the order
+    * @param _ownerContactEmail New email of the order creator for communication
+    * @param _ownerContactAdditional New additional contact information of the order creator
+    * @param _ipfsTextDescription New IPFS hash of the order's description
+    * @param _ipfsDetailsFile New IPFS hash of the file with detailed order information
+    */
     function modifyOrder(uint _id, bytes32 _title, 
             bytes32 _ownerContactEmail, bytes32 _ownerContactAdditional,
             string _ipfsTextDescription, string _ipfsDetailsFile)
@@ -279,6 +413,19 @@ contract DappWork is Pausable
             ordersList[_index].ownerLock, ordersList[_index].freelancerLock);
     }
 
+    /**
+    * @notice Modify the existing order. Helps to solve the conflict between
+    * the customer and the freelancer by modifying their locks or order info.
+    * @dev Function can be executed only by CONTRACT owner and moders
+    * @param _id The order ID (it won't change)
+    * @param _title New title of the order
+    * @param _ownerContactEmail New email of the order creator for communication
+    * @param _ownerContactAdditional New additional contact information of the order creator
+    * @param _ipfsTextDescription New IPFS hash of the order's description
+    * @param _ipfsDetailsFile New IPFS hash of the file with detailed order information
+    * @param _ownerLock Allows moder to remove or set owner's lock
+    * @param _freelancerLock Allows moder to remove or set freelancer's lock
+    */
     function moderModifyOrder(uint _id, bytes32 _title,
             bytes32 _ownerContactEmail, bytes32 _ownerContactAdditional, 
             string _ipfsTextDescription, string _ipfsDetailsFile, 
@@ -297,6 +444,16 @@ contract DappWork is Pausable
             _ownerLock, _freelancerLock);
     }
 
+    /**
+    * @dev Private function to remove duplicate code in public modify functions
+    * @param _id The order ID (it won't change)
+    * @param _title New title of the order
+    * @param _ownerContactEmail New email of the order creator for communication
+    * @param _ownerContactAdditional New additional contact information of the order creator
+    * @param _ipfsTextDescription New IPFS hash of the order's description
+    * @param _ipfsDetailsFile New IPFS hash of the file with detailed order information
+    * @return The order ID
+    */
     function _modifyOrder(uint _id, bytes32 _title, 
             bytes32 _ownerContactEmail, bytes32 _ownerContactAdditional,
             string _ipfsTextDescription, string _ipfsDetailsFile)
@@ -313,6 +470,13 @@ contract DappWork is Pausable
         return _index;
     }
 
+    /**
+    * @notice Set the freelancer for the order by its ID
+    * and lock the order to prevent editing and removing this order.
+    * @param _id The order ID
+    * @param _freelancer Freelancer's address
+    * @param _freelancerContactEmail Freelancer's contact information to help moders to solve conflicts.
+    */
     function setOrderFreelancer(uint _id, address _freelancer, bytes32 _freelancerContactEmail) 
         public onlyOrderOwner(_id) orderNotLocked(_id) whenNotPaused
     {
@@ -329,11 +493,22 @@ contract DappWork is Pausable
         emit LogOrderFreelancerAdded(_id, _freelancer, _freelancerContactEmail);
     }
     
+    /**
+    * @notice Helps the caller to check if he\she was assigned to the order by its ID
+    * @param _id The order ID
+    * @return TRUE if assigned and FALSE if not
+    */
     function isMyselfApprovedForOrder(uint _id) public view returns(bool)
     {
         return isAddressApprovedForOrder(_id, msg.sender);
     }
     
+    /**
+    * @notice Helps to check if address was assigned as freelancer to the order by its ID
+    * @param _id The order ID
+    * @param _freelancer Address to check
+    * @return TRUE if assigned and FALSE if not
+    */
     function isAddressApprovedForOrder(uint _id, address _freelancer) 
         public view orderExists(_id) returns(bool)
     {
@@ -351,6 +526,12 @@ contract DappWork is Pausable
         }
     }
 
+    /**
+    * @notice Helps to check if freelancer's email added to the order is correct
+    * @param _id The order ID
+    * @param _freelancerContactEmail Email to check
+    * @return TRUE if assigned and FALSE if not
+    */
     function isFreelancerEmailCorrectForOrder(uint _id, bytes32 _freelancerContactEmail)
         public view orderExists(_id) returns(bool)
     {
@@ -365,6 +546,12 @@ contract DappWork is Pausable
         }    
     }
     
+    /**
+    * @notice Removes owner's lock from the order. Which means that the order
+    * owner wants to cancel working with currently assigned freelancer.
+    * @dev Can be executed only by ORDER owner.
+    * @param _id The order ID
+    */
     function unlockOrderOwner(uint _id) public onlyOrderOwner(_id) whenNotPaused
     {
         uint _index = ordersListIndex[_id].index;
@@ -373,6 +560,12 @@ contract DappWork is Pausable
         emit LogOrderUnlockedByOwner(_id);
     }
     
+    /**
+    * @notice Removes freelancer's lock from the order. Which means that the
+    * freelancer wants to give up to complete this order.
+    * @dev Can be executed only by freelancer assigned to the order.
+    * @param _id The order ID
+    */
     function unlockOrderFreelancer(uint _id) public onlyOrderFreelancer(_id) whenNotPaused
     {
         uint _index = ordersListIndex[_id].index;
@@ -381,6 +574,13 @@ contract DappWork is Pausable
         emit LogOrderUnlockedByFreelancer(_id);
     }
     
+    /**
+    * @notice Complete the order. 
+    * The funds is transferred to the freelancer (exclude the small fee). 
+    * The order is removed.
+    * @dev Can be executed only by ORDER owner.
+    * @param _id The order ID
+    */
     function completeOrder(uint _id) public onlyOrderOwner(_id) whenNotPaused
     {
         uint _index = ordersListIndex[_id].index;

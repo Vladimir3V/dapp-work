@@ -51,7 +51,6 @@ export const store = new Vuex.Store({
             state.contractEvents.LogModerRemoved = contract.LogModerRemoved
             state.contractEvents.LogOrderCreated = contract.LogOrderCreated
             state.contractEvents.LogOrderModified = contract.LogOrderModified
-            state.contractEvents.LogOrderStarted = contract.LogOrderStarted
             state.contractEvents.LogOrderUnlockedByOwner = contract.LogOrderUnlockedByOwner
             state.contractEvents.LogOrderUnlockedByFreelancer = contract.LogOrderUnlockedByFreelancer
             state.contractEvents.LogOrderCompleted = contract.LogOrderCompleted
