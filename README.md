@@ -5,9 +5,9 @@ DappWork is decentralized labor exchange [Smart Contract](https://en.wikipedia.o
 ## Content
 
 - [Architecture](#architecture)
-- [Prerequisites and Setting Up the Enviroment](#prerequisites-and-setting-up-the-enviroment)
 - [Some Notes for Reviewers](#some-notes-for-reviewers)
 - [Demo in Rinkeby Test Network](#demo-in-rinkeby-test-network)
+- [Prerequisites and Setting Up the Enviroment](#prerequisites-and-setting-up-the-enviroment)
 - [Getting Started](#getting-started)
 - [Testing](#testing)
 - [Avoiding Common Attacks](#avoiding-common-attacks)
