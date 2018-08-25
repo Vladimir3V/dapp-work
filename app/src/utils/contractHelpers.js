@@ -259,7 +259,7 @@ export async function setOrderFreelancer(payload) {
 
         let { id, freelancer_addr, freelancer_email } = payload
 
-        freelancer_addr = web3.fromAscii(freelancer_addr)
+        freelancer_addr = freelancer_addr
         freelancer_email = web3.fromAscii(freelancer_email)
 
 
@@ -270,7 +270,7 @@ export async function setOrderFreelancer(payload) {
 
         return dappWork.LogOrderFreelancerAdded
     } catch (err) {
-        console.error("[ERROR] in removeOrder():", err)
+        console.error("[ERROR] in setOrderFreelancer():", err)
         return null
     }
 }

@@ -11,7 +11,7 @@
             </div>
             </div>
             <div class="card-content">
-            <p class="content">{{ text }}</p>
+            <p class="content" id="order-card-description">{{ text }}</p>
             </div>
             <div class="card-footer">
             <p class="card-footer-item"><b>Budget:</b>&emsp;{{ budget }} Ether</p>
@@ -81,7 +81,9 @@ export default {
 <style lang="sass" scoped>
 @import "../mq"
 
-.content
+#order-card-description
     white-space: pre-wrap
+    max-height: 350px
+    overflow-y: auto
 
 </style>

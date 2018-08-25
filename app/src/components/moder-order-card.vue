@@ -283,7 +283,7 @@
             </ul>
           </div>
           <div class="content">
-            <p id="owner-order-card-read-content">{{ text }}</p>
+            <p id="order-card-description">{{ text }}</p>
           </div>
           <div class="content is-small">
             <p><b>Additional information:</b>&emsp;<a v-if="file_hash" :href="`https://ipfs.io/ipfs/${file_hash}`" target="_blank">{{ file_hash }}</a></p>
@@ -486,10 +486,10 @@ export default {
 
       this.$store.dispatch("setWeb3ProcessingAction", true);
 
-      if (this.file) {
+      if (this.file_new) {
         let reader = new window.FileReader();
         reader.onloadend = () => this.submitEditingContinue(reader);
-        reader.readAsArrayBuffer(this.file);
+        reader.readAsArrayBuffer(this.file_new);
       } else {
         this.submitEditingContinue(null);
       }
@@ -601,9 +601,11 @@ export default {
 <style lang="sass" scoped>
 @import "../mq"
 
-#owner-order-card-read-content
+#order-card-description
   padding: 5px
   white-space: pre-wrap
+  max-height: 350px
+  overflow-y: auto
 
 .card-content
   padding: 5px

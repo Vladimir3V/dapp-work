@@ -7,14 +7,15 @@ let getContract = new Promise(function (resolve, reject) {
     let web3 = new Web3(window.web3.currentProvider)
     const DappWork = contract(contractData);
     DappWork.setProvider(web3.currentProvider);
+    DappWork.deployed().then(async instance => {
+        resolve(instance)
+    }).catch(error => {
+        console.error("[ERROR] in getTruffleContract.js deplayed():", error)
+    })
     DappWork.at(CONTRACT_ADDRESS).then(async instance => {
         resolve(instance)
     }).catch(error => {
-        DappWork.deployed().then(async instance => {
-            resolve(instance)
-        }).catch(error => {
-            reject(error)
-        })
+        console.error("[ERROR] in getTruffleContract.js at():", error)
     })
 });
 export default getContract

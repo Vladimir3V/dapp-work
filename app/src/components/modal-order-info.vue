@@ -12,7 +12,7 @@ is-offset-1-mobile">
                     <div class="card-header-title">
                       <p class="title is-5">{{ title }}</p>
                     </div>
-                    <a class="card-header-icon" @click="$emit('close')">
+                    <a class="card-header-icon" v-on:click="$emit('close')">
                       <span class="icon" >
                         <i class="fa fa-times"></i>
                       </span>
@@ -30,7 +30,7 @@ is-offset-1-mobile">
                           <td>{{ owner_contact }}</td>
                         </tr>
                       </table>
-                      <p class="content">{{ text }}</p>
+                      <p class="content" id="order-card-description">{{ text }}</p>
                       <p><b>Additional information:</b>&emsp;<a v-if="file_hash" :href="`https://ipfs.io/ipfs/${file_hash}`" target="_blank">{{ file_hash }}</a></p>
                     </div>
                   </div>
@@ -115,8 +115,10 @@ export default {
   &:hover
     color: black
 
-.content
+#order-card-description
     white-space: pre-wrap
+    max-height: 350px
+    overflow-y: auto
 
 .modal-mask 
   position: fixed

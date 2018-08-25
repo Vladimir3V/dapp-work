@@ -24,7 +24,7 @@
 
           <div class="navbar-item">
             <p class="control">
-              <a class="button is-primary is-outlined" @click="showModalOrderCreate = true">
+              <a class="button is-primary is-outlined" v-on:click="showModalOrderCreate = true">
                 <span class="icon">
                   <i class="fa fa-plus-circle"></i>
                 </span>

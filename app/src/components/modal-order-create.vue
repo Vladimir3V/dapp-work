@@ -13,7 +13,7 @@ is-offset-1-mobile">
                     <div class="card-header-title">
                       <p class="title is-5">Create Order</p>
                     </div>
-                    <a class="card-header-icon is-primary" @click="$emit('close')">
+                    <a class="card-header-icon is-primary" v-on:click="$emit('close')">
                       <span class="icon" >
                         <i class="fa fa-times"></i>
                       </span>
@@ -146,7 +146,7 @@ is-offset-1-mobile">
 
                         <div class="field is-grouped">
                           <div class="control">
-                            <button :class="{'button':true,
+                            <div :class="{'button':true,
                                              'is-success':true,
                                              'is-loading':isProcessing,}" 
                                     v-on:click="submitForm()">
@@ -154,15 +154,15 @@ is-offset-1-mobile">
                                 <i class="fa fa-check"></i>
                               </span>
                               <span>Submit</span>
-                            </button>
+                            </div>
                           </div>
                           <div class="control">
-                            <button class="button is-danger" @click="$emit('close')">
+                            <div class="button is-danger" v-on:click="$emit('close')">
                               <span class="icon is-small">
                                 <i class="fa fa-times"></i>
                               </span>
                               <span>Close</span>
-                            </button>
+                            </div>
                           </div>
                         </div>
 
