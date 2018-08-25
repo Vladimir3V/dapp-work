@@ -2,6 +2,16 @@
 
 DappWork is decentralized labor exchange [Smart Contract](https://en.wikipedia.org/wiki/Smart_contract) based on Ethereum network that allows placing an orders for the freelancer, complete these orders by freelancer and be sure that neither side will be deceived.
 
+## Content
+
+- [Architecture](#architecture)
+- [Prerequisites and Setting Up the Enviroment](#prerequisites-and-setting-up-the-enviroment)
+- [Getting Started](#getting-started)
+- [Testing](#testing)
+- [Avoiding Common Attacks](#avoiding-common-attacks)
+- [Design Pattern Decisions](#design-pattern-decisions)
+- [Author](#author)
+
 ## Architecture
 
 I will explain it by roles. It will be much easier to understand how all things work. Every address can be both the customer and the freelancer.
@@ -21,12 +31,12 @@ Let's imagine that all things went well:
 * You receive the result, you are happy with it and submit that the order is completed. You can submit that the order is completed only when it's locked (which means that someone is assigned to the order).
 * Freelancer gets his money. Everyone is happy. The order is removed.
 
-Another situation. The freelancer can't complete your job and he\she is agreed with it.
+Another situation. The freelancer can't complete your job and he/she is agreed with it.
 * Unlock the order from your side.
 * Ask the freelancer to unlock the order from his side.
 * When the order is unlocked you can remove it, edit or assign the new freelancer to it.
 
-The worst case. You have a conflict with the freelancer and he\she refuses to unlock the order.
+The worst case. You have a conflict with the freelancer and he/she refuses to unlock the order.
 In this case, you should contact moderators of this smart contract. Check the **Moderator Role** section to see how they can help you.
 
 ### Freelancer Role
@@ -62,12 +72,12 @@ Moderators can:
 The contract owner is a moderator with additional features:
 * Withdraw accumulated profit from the collected fees and send salary to the moderators.
 * Add the new moderators and delete the old ones.
-* Pause \ Unpause the contract when issues were found or resolved.
-* Setup a new contract address through the Registry contract.
+* Pause / Unpause the contract when issues were found or resolved.
+* Setup a new contract address through the Register contract.
 * Pass the ownership of the contract to another address.
 
 
-## Prerequisites and Setting Up the enviroment (if needed)
+## Prerequisites and Setting Up the Enviroment
 
 * **MetaMask Extension** for your browser
 You can get it here: https://metamask.io/
@@ -141,3 +151,42 @@ If you got the error, install it by executing command:
 ```
 > cd app
 > npm start
+```
+7. Open the link http://localhost:8080 and feel free to play around!
+
+Loading files to IPFS through public node can take some time, please be patient while creating the order or modifying order.
+
+8. (OPTIONAL) You can populate the app with the sample data. 
+
+The script will add account#1 as moderator and create 11 orders from accounts #2, #3 & #4. Just to remind: account#0 is the contract owner!
+
+
+Open the new command prompt move to 'dapp-work/app' directory and run the script:
+```
+> cd dapp-work/app
+> npm run populate
+```
+
+## Testing
+
+The test cover:
+* Ownership of the contract;
+* Authorized access to the restricted functions by roles;
+* Create \ Modify \ Remove \ Set Freelancer \ Unlock \ Complete function for orders;
+* Validating input, stored and output data;
+* Most of the common scenarios of using this smart contract;
+* Reverting state for the common exceptional cases;
+* Upgradability.
+
+## Avoiding Common Attacks
+
+[Read here](avoiding_common_attacks.md)
+
+
+## Design Pattern Decisions
+
+[Read here](design_pattern_decisions.md)
+
+## Author
+
+* drag0no (Pavel Krot - krotpv@gmail.com)

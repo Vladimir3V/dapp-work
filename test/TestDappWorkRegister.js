@@ -26,7 +26,7 @@ contract("DappWorkRegister", accounts => {
         register = await DappWorkRegister.new(dappWork01.address, {from: accounts[0]});
     });
 
-    it("[OK] Check the owner account#0 of main and registry contracts", async () => {
+    it("[OK] Check the owner account#0 of main and register contracts", async () => {
         assert.equal(await dappWork01.owner.call(), accounts[0]);
         assert.equal(await register.owner.call(), accounts[0]);
     });

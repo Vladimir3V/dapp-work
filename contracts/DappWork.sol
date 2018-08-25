@@ -164,6 +164,22 @@ contract DappWork is Pausable
     }
     
     /**
+    * @dev Private function to check that the address is the contract. 
+    * It is needed to prevent creating undeletable orders by other contracts.
+    * Because we can't transfer funds back to the order owner if it's the contract.
+    * @param _addr The address to be checked
+    * @return TRUE is the address is another contract and FALSE if it's not
+    */
+    function isContract(address _addr) view private returns (bool _isContract)
+    {
+        uint32 size;
+        assembly {
+            size := extcodesize(_addr)
+        }
+        return (size > 0);
+    }
+
+    /**
     * @notice Withdraw accumulated profit from the contract to buy some food. 
     * The function is only available for the CONTRACT owner.
     * @param amount The amount in (wei) to be withdrawn
@@ -270,6 +286,7 @@ contract DappWork is Pausable
         public payable whenNotPaused
     {
         require(msg.value >= minBudget, "Minimal budget is not fulfilled");
+        require(!isContract(msg.sender), "Contracts are not allowed to create orders!");
         require(_ownerContactEmail[0] != 0, "E-mail is required");
 
         uint order_id = lastOrderId.add(1);
@@ -331,7 +348,6 @@ contract DappWork is Pausable
 
         (uint budget, address _owner, address _freelancer) = _removeOrder(_id);
         uint to_owner = budget.mul(_percentProportionToOwner).div(100);  // budget * (_percentProportionToOwner / 100)
-        _owner.transfer(to_owner);
         
         if (_percentProportionToOwner < 100)
         {
@@ -343,6 +359,7 @@ contract DappWork is Pausable
             _freelancer.transfer(to_freelancer);
         }
         
+        _owner.transfer(to_owner);
         emit LogOrderRemoved(_id, msg.sender);
     }
     
