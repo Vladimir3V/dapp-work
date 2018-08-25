@@ -67,11 +67,77 @@ The contract owner is a moderator with additional features:
 * Pass the ownership of the contract to another address.
 
 
-## Prerequests
+## Prerequisites and Setting Up the enviroment (if needed)
 
-* Node.js v8.11.4+: https://nodejs.org/en/download/package-manager/
-* NPM v6.3.0+: Installing with the Node.js
+* **MetaMask Extension** for your browser
+You can get it here: https://metamask.io/
+
+* **Node.js v8.11.4+**
+```
+> node -v
+v8.11.3
+```
+If you got the error, install it from here: https://nodejs.org/en/download/package-manager/
+
+* **npm v5.6.0+** (should be installed with the Node.js, but lets check it)
+```
+> npm -v
+5.6.0
+```
+
+* **Git v2.7.4+**
+```
+> git --version
+git version 2.7.4
+```
+If you got the error, install it from here: https://git-scm.com/downloads
+
+* **Truffle v4.1.13+**
+```
+> truffle version
+Truffle v4.1.13 (core: 4.1.13)
+Solidity v0.4.24 (solc-js)
+```
+If you got the error, install it by executing command:
+```
+> npm install -g truffle
+```
+
+* **Ganache-CLI v6.1.6+**
+```
+> ganache-cli --version
+Ganache CLI v6.1.6 (ganache-core: 2.1.5)
+```
+If you got the error, install it by executing command:
+```
+> npm install -g ganache-cli
+```
 
 ## Getting Started
 
-How to install Node.js: 
+1. Run Ganache in the separate command prompt:
+```
+> ganache-cli
+```
+2. Clone the repo and move to 'dapp-work/app' directory (notice that the app directory is located in separate directory):
+```
+> git clone https://github.com/drag0no/dapp-work.git
+> cd dapp-work/app
+```
+3. Install dependencies:
+```
+> npm install
+```
+4. Move back to one directory and test the contract with Truffle:
+```
+> cd ..
+> truffle test
+```
+5. If all tests have passed let's deploy the fresh contract to play around:
+```
+> truffle migrate --reset
+```
+6. Move to app directory and run the app:
+```
+> cd app
+> npm start
