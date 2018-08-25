@@ -82,7 +82,7 @@ The contract owner is a moderator with additional features:
 
 ### EthPM
 
-I used [OpenZeppelin Solidity](https://github.com/OpenZeppelin/openzeppelin-solidity) libraries through npm, instead of EthPM, because they are outdated there.
+I used [OpenZeppelin Solidity](https://github.com/OpenZeppelin/openzeppelin-solidity) libraries through npm, because they are outdated in the EthPM (they were installed through EthPM and then replaced by the npm ones).
 
 ### IPFS
 
