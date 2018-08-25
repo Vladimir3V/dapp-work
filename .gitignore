@@ -1,5 +1,5 @@
 # Mine
-build/
+/build/
 *.log
 *.txt
 
