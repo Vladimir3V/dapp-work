@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "bignumber.js": "^7.2.1",
     "bulma": "^0.7.1",
     "font-awesome": "^4.7.0",
     "ipfs-api": "^24.0.1",
@@ -28,7 +29,8 @@
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
-    "web3": "^0.20.6"
+    "web3": "^0.20.6",
+    "webcrypto-shim": "^0.1.4"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
