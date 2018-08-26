@@ -14,26 +14,26 @@ DappWork is decentralized labor exchange [Smart Contract](https://en.wikipedia.o
 - [Design Pattern Decisions](#design-pattern-decisions)
 - [Author](#author)
 
-## Architecture
+## Architecture 
 
 I will explain it by roles. It will be much easier to understand how all things work. Every address can be both the customer and the freelancer.
 
 ### Customer Role
 
 You are the **customer** (order owner) and you have a good job to offer.
-* You create a new order with your contact information. An the same time when you create the order, the budget will be sent from your account to the smart contract.
+* You create a new order with your contact information. At the same time when you create the order, the budget will be sent from your account to the smart contract.
 * Wait until you will be contacted by a freelancer that meets your requirements.
-* While waiting for your appropriate freelancer you find a mistake in your order. You can edit or remove the order (on the "Own Orders" page) while you haven't assigned a freelancer to this order. If you decide to remove the order you will be refunded with all your budget. If you modify the order's budget, the new budget will be set to the order and the old one will be refunded to you.
+* While waiting for appropriate freelancer you find a mistake in your order. You can edit or remove the order (on the "Own Orders" page) while you haven't assigned a freelancer to this order. If you decide to remove the order you will be refunded with all your budget. If you modify the order's budget, the new budget will be set to the order and the old one will be refunded to you.
 * You find the freelancer that you need and assign him to your contract.
 
-Right now the contract is **LOCKED** (by you and the freelancer) and you can't remove or modify it.
+Right now the order is LOCKED by smart contract (note there appear two locks: owner's and freelancer's) and you can't remove or modify it.
 
 Let's imagine that all things went well:
-* Freelancer made a good job and send it to you.
+* Freelancer makes a good job and sends it to you.
 * You receive the result, you are happy with it and submit that the order is completed. You can submit that the order is completed only when it's locked (which means that someone is assigned to the order).
 * Freelancer gets his money. Everyone is happy. The order is removed.
 
-Another situation. The freelancer can't complete your job and he/she is agreed with it.
+Another situation. The freelancer can't complete your job and he/she agrees with this fact.
 * Unlock the order from your side.
 * Ask the freelancer to unlock the order from his/her side.
 * When the order is unlocked you can remove it, edit or assign the new freelancer to it.
@@ -51,7 +51,7 @@ You need some money to buy some food and you decide to take an order.
 * Be sure to check your e-mail in the order. It will help the moderators to solve the possible conflict between you and the order owner.
 
 Let's imagine that all things went well.
-* You made your job and send it to a customer.
+* You make your job and send it to a customer.
 * The customer is happy and submits that the order is completed, then the smart contract will send you the budget of the order minus fee (for my contract it's the lowest possible value - 1%).
 * You get and buy some nice taco to eat.
 
@@ -165,12 +165,12 @@ If you got the error, install it by executing command:
 ```
 > npm install
 ```
-4. Move back to one directory and test the contract with Truffle:
+4. Move one directory back and test the contract with Truffle:
 ```
 > cd ..
 > truffle test
 ```
-5. If all tests have passed let's deploy the fresh contract to play around:
+5. If all tests are passed let's deploy the fresh contract to play around:
 ```
 > truffle migrate --reset
 ```
@@ -188,7 +188,7 @@ Loading files to IPFS through public node can take some time, please be patient 
 The script will add account#1 as moderator and create 11 orders from accounts #2, #3 & #4. Just to remind: account#0 is the contract owner!
 
 
-Open the new command prompt move to 'dapp-work/app' directory and run the script:
+Open the new command prompt, move to 'dapp-work/app' directory and run the script:
 ```
 > cd dapp-work/app
 > npm run populate

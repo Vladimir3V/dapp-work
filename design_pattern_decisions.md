@@ -2,7 +2,7 @@
 
 ### Fail early and fail loud
 
-All the functions perform crucial `require()` in their beginning to revert if something wrong with input data.
+All the functions perform crucial `require()` in their beginning to revert if something wrong is with input data.
 
 ### Restricted access
 
@@ -22,4 +22,4 @@ Pull is used to withdraw accumulated profit from collected fees.
 
 ### Upgradable
 
-Register contract `DappWorkRegister` allows us to change the current contract address from the old one to a new one. The frontends can be dynamically updated contract address by listening to the appropriate event.
+Register contract `DappWorkRegister` allows us to change the current contract address from the old one to a new one. The frontends can dynamically update contract address by listening to the appropriate event.
