@@ -1,6 +1,6 @@
 # DappWork
 
-DappWork is decentralized labor exchange [Smart Contract](https://en.wikipedia.org/wiki/Smart_contract) based on Ethereum network that allows placing an orders for the freelancer, complete these orders by freelancer and be sure that neither side will be deceived.
+DappWork is decentralized labor exchange [Smart Contract](https://en.wikipedia.org/wiki/Smart_contract) based on Ethereum network that allows placing the orders for the freelancers, complete these orders by freelancers and be sure that neither side will be deceived.
 
 ## Content
 
@@ -21,9 +21,9 @@ I will explain it by roles. It will be much easier to understand how all things 
 ### Customer Role
 
 You are the **customer** (order owner) and you have a good job to offer.
-* You create a new order with your contact information.
-* Waite while you will be contacted by a freelancer that meets your requirements.
-* While waiting for your lovely freelancer you find a mistake in your order. You can edit or remove the order while you haven't assigned a freelancer to this order. If you decide to remove the order you will be refunded with all your budget. If you modify order's budget the new budget will be set to the order and the old one will be refunded to you.
+* You create a new order with your contact information. An the same time when you create the order, the budget will be sent from your account to the smart contract.
+* Wait until you will be contacted by a freelancer that meets your requirements.
+* While waiting for your appropriate freelancer you find a mistake in your order. You can edit or remove the order (on the "Own Orders" page) while you haven't assigned a freelancer to this order. If you decide to remove the order you will be refunded with all your budget. If you modify the order's budget, the new budget will be set to the order and the old one will be refunded to you.
 * You find the freelancer that you need and assign him to your contract.
 
 Right now the contract is **LOCKED** (by you and the freelancer) and you can't remove or modify it.
@@ -35,7 +35,7 @@ Let's imagine that all things went well:
 
 Another situation. The freelancer can't complete your job and he/she is agreed with it.
 * Unlock the order from your side.
-* Ask the freelancer to unlock the order from his side.
+* Ask the freelancer to unlock the order from his/her side.
 * When the order is unlocked you can remove it, edit or assign the new freelancer to it.
 
 The worst case. You have a conflict with the freelancer and he/she refuses to unlock the order.
@@ -45,13 +45,15 @@ In this case, you should contact moderators of this smart contract. Check the **
 
 You need some money to buy some food and you decide to take an order.
 * You find the interesting order with a good budget.
-* Contact with the order owner. Find out that he is psycho. Well, let's find another order.
-* Yeah! You found it and the customer is a nice guy.
+* Contact with the order owner using the contact information. Find out that he is psycho. Well, let's find another order.
+* Yeah! You find it and the customer is a nice guy. Ask the customer to assign you as the freelancer to the order and wait until the order will pop up on the frontend ("Assigned Order" page).
+* When you see in the frontend that the order is poped up and it has your e-mail inside, that means that order is assigned to you and it has been **LOCKED**. Right now you can start to work on this order.
+* Be sure to check your e-mail in the order. It will help the moderators to solve the possible conflict between you and the order owner.
 
 Let's imagine that all things went well.
 * You made your job and send it to a customer.
-* The customer is happy and submits that the order is completed.
-* You get your money and buy some nice taco to eat.
+* The customer is happy and submits that the order is completed, then the smart contract will send you the budget of the order minus fee (for my contract it's the lowest possible value - 1%).
+* You get and buy some nice taco to eat.
 
 Another case. You can't deliver the job and you agree with it. You can give up on contract by unlocking it and don't forget to tell the customer that you unlocked the order (anyway he can notice that the order is unlocked in the frontend... but be a nice guy and keep the good relationships).
 
