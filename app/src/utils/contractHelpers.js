@@ -78,6 +78,8 @@ export async function createOrder(payload) {
 
         title = web3.fromAscii(title)
         email_contact = web3.fromAscii(email_contact)
+
+        additional_contact = (additional_contact) ? additional_contact : "None"
         additional_contact = web3.fromAscii(additional_contact)
 
         budget = web3.toWei(budget, 'ether')
@@ -122,6 +124,8 @@ export async function modifyOrder(payload) {
 
         title = web3.fromAscii(title)
         email_contact = web3.fromAscii(email_contact)
+        
+        additional_contact = (additional_contact) ? additional_contact : "None"
         additional_contact = web3.fromAscii(additional_contact)
         
         let params = {
@@ -170,8 +174,9 @@ export async function moderModifyOrder(payload) {
 
         title = web3.fromAscii(title)
         email_contact = web3.fromAscii(email_contact)
+        
+        additional_contact = (additional_contact) ? additional_contact : "None"
         additional_contact = web3.fromAscii(additional_contact)
-    
 
         let params = {
             from: account,

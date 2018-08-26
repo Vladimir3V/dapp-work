@@ -7,9 +7,9 @@ DappWork is decentralized labor exchange [Smart Contract](https://en.wikipedia.o
 - [Architecture](#architecture)
 - [Some Notes for Reviewers](#some-notes-for-reviewers)
 - [Demo in Rinkeby Test Network](#demo-in-rinkeby-test-network)
-- [Prerequisites and Setting Up the Enviroment](#prerequisites-and-setting-up-the-enviroment)
-- [Getting Started](#getting-started)
-- [Testing](#testing)
+- [Prerequisites and Setting Up the Test Environment](#prerequisites-and-setting-up-the-test-environment)
+- [Getting Started for the Testing](#getting-started-for-the-testing)
+- [Truffle Tests](#truffle-tests)
 - [Avoiding Common Attacks](#avoiding-common-attacks)
 - [Design Pattern Decisions](#design-pattern-decisions)
 - [Author](#author)
@@ -90,15 +90,20 @@ I used [OpenZeppelin Solidity](https://github.com/OpenZeppelin/openzeppelin-soli
 
 ## Demo in Rinkeby Test Network
 
-The contracts are deployed in Rinkeby Test Network.
-The contracts addresses are listed in [deployed_addresses.txt](deployed_addresses.txt)
+### Prerequisites
+* You will need [MetaMask](https://metamask.io/) extension and understanding how to use it (they have a good video tutorial on their website).
+* Check that you are connected to Rinkeby Test Network.
+* If you have no Ether on your account use "Buy \ Deposit" button in MetaMask through Faucet requesting (test networks allow you to get some Ethereum for free to test DApps).
+* Use one of the links listed below in `"The Web App is available on"` section.
 
-The Web App is available on:
-* Github Pages: https://drag0no.github.io/dapp-work
+The contracts addresses are listed in [deployed_addresses.txt](deployed_addresses.txt).
+
+### The Web App is available on:
+* Github Pages: https://drag0no.github.io/dapp-work (This one is the fresh one)
 * IPFS: https://ipfs.io/ipfs/QmQTDwtPPzyHmEyUXJkUB9aqEmKgVeA8MC7BzPXuWbPYrh
 * IPFS+ENS: http://dapp-work.thisisme.eth (You will need the [ENS Content Resolver](https://chrome.google.com/webstore/detail/ens-content-resolver/ifgfopmoihnnicfgcpafgibiinfkodjf) extension)
 
-## Prerequisites and Setting Up the Enviroment
+## Prerequisites and Setting Up the Test Environment
 
 * **MetaMask Extension** for your browser (You can get it here: https://metamask.io/)
 
@@ -143,7 +148,7 @@ If you got the error, install it by executing command:
 > npm install -g ganache-cli
 ```
 
-## Getting Started
+## Getting Started for the Testing
 
 1. Run Ganache in the separate command prompt:
 ```
@@ -187,9 +192,9 @@ Open the new command prompt move to 'dapp-work/app' directory and run the script
 > npm run populate
 ```
 
-## Testing
+## Truffle Tests
 
-The test cover:
+The tests cover:
 * Ownership of the contract;
 * Authorized access to the restricted functions by roles;
 * Create \ Modify \ Remove \ Set Freelancer \ Unlock \ Complete function for orders;

@@ -147,8 +147,8 @@ is-offset-1-mobile">
                         <div class="field is-grouped">
                           <div class="control">
                             <div :class="{'button':true,
-                                             'is-success':true,
-                                             'is-loading':isProcessing,}" 
+                                          'is-success':true,
+                                          'is-loading':isProcessing}" 
                                     v-on:click="submitForm()">
                               <span class="icon is-small">
                                 <i class="fa fa-check"></i>
@@ -157,7 +157,10 @@ is-offset-1-mobile">
                             </div>
                           </div>
                           <div class="control">
-                            <div class="button is-danger" v-on:click="$emit('close')">
+                            <div :class="{'button': true,
+                                          'is-danger': true,
+                                          'is-loading': isProcessing}"
+                                  v-on:click="$emit('close')">
                               <span class="icon is-small">
                                 <i class="fa fa-times"></i>
                               </span>
@@ -242,6 +245,7 @@ export default {
       }
       console.log("[DEBUG] createOrderAction dispatched from modal-order-create.vue")
       this.$store.dispatch("createOrderAction", payload)
+      this.$emit("close")
     },
     handleFileUpload(event) {
       console.log("[DEBUG] handleFileUpload event:", event)
