@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
-import "../app/node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
-import "../app/node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "./Pausable.sol";
+import "./SafeMath.sol";
 
 /**
  * @title Decentralised Labor Exchange

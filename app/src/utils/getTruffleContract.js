@@ -1,4 +1,4 @@
-const CONTRACT_ADDRESS = "0x2a1c7ac065eebc36de37b9836580f6d18421899d";
+const CONTRACT_ADDRESS = "0xd166049f8c5a32459b041f6c7aba5823f8be4c7a";
 const Web3 = require('web3');
 const contract = require('truffle-contract');
 const contractData = require('../../../build/contracts/DappWork.json');

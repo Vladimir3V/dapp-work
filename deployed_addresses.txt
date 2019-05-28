@@ -1,4 +1,9 @@
 Rinkeby Test Network
 
+New:
+DappWork: 0xd166049f8c5a32459b041f6c7aba5823f8be4c7a
+DappWorkRegister: 0xaab4da3baa6a94aa09015219cf4fed99bc831d1a
+
+Old:
 DappWork: 0x2a1c7ac065eebc36de37b9836580f6d18421899d
 DappWorkRegister: 0xaab4da3baa6a94aa09015219cf4fed99bc831d1a
