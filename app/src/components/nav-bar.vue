@@ -4,7 +4,9 @@
     <div class="navbar has-shadow">
       <div class="container">
         <div class="navbar-brand">
-            <router-link to="/" class="navbar-item is-primary">DappWork</router-link>
+            <router-link to="/" class="navbar-item is-primary">
+              <img src="/static/img/laborX-blue.png" alt="Smiley face" height="100" width="100">
+            </router-link>
 
             <span class="navbar-burger" v-on:click="toggleNav" v-bind:class="{ 'is-active': isActive }">
                 <span/>
