@@ -5,7 +5,12 @@
       <div class="container">
         <div class="navbar-brand">
           <router-link to="/" class="navbar-item is-primary">
-            <img :src="'/img/' + pic + '.png'" alt="Smiley face" height="100" width="100">
+            <img
+              :src="'/static/img/' + 'laborX-blue' + '.png'"
+              alt="Smiley face"
+              height="100"
+              width="100"
+            >
           </router-link>
 
           <span
