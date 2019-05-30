@@ -6,7 +6,7 @@
         <div class="navbar-brand">
           <router-link to="/" class="navbar-item is-primary">
             <img
-              :src="'../static/img/' + 'laborX-blue' + '.png'"
+              :src="'./static/img/' + 'laborX-blue' + '.png'"
               alt="Smiley face"
               height="100"
               width="100"
