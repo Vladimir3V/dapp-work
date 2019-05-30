@@ -6,6 +6,7 @@ import FreelancerOrders from '@/components/freelancer-orders'
 import ModerOrders from '@/components/moder-orders'
 import ContractOwnerPanel from '@/components/contract-owner-panel'
 import Contacts from '@/components/contacts'
+import AvailableOrders from '@/components/available-orders'
 
 Vue.use(Router)
 
@@ -15,6 +16,11 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home
+    },
+    {
+      path: '/available-orders',
+      name: 'available-orders',
+      component: AvailableOrders
     },
     {
       path: '/owner-orders',

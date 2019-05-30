@@ -7,7 +7,7 @@
           <router-link to="/" class="navbar-item is-primary">
             <img
               :src="'./static/img/' + 'laborX-blue' + '.png'"
-              alt="Smiley face"
+              alt="LaborX"
               height="100"
               width="100"
             >
@@ -26,6 +26,7 @@
 
         <div class="navbar-menu navbar-end" v-bind:class="{ 'is-active': isActive }">
           <router-link to="/" class="navbar-item r-item">Home</router-link>
+          <router-link to="/available-orders" class="navbar-item r-item">Available Orders</router-link>
           <router-link to="/owner-orders" class="navbar-item r-item">Own Orders</router-link>
           <router-link to="/freelancer-orders" class="navbar-item r-item">Assigned Orders</router-link>
           <router-link to="/moder-orders" class="navbar-item r-item" v-if="isModer">Moder Panel</router-link>

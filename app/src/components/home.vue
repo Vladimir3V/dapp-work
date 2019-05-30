@@ -1,139 +1,152 @@
 <template>
-    <div class="home">
+  <div class="home">
+    <modal-order-create v-if="showModalOrderCreate" @close="showModalOrderCreate = false"/>
+    <div class="container">
+      <div class="section">
+        <div class="row first">
+          <div class="col-sm-1"></div>
+          <div class="col-sm-6">
+            <h1 class="title">Secure contract platform</h1>
+            <h2 class="subtitle">Replace old paper contract with smart contract</h2>
 
-      <div class="container">
-
-        <h1 class="title">Available Orders</h1>
-        <div class="subtitle box is-6">
-          <ul>
-            <li>Click on the order to get a detailed description.</li>
-            <li>Contact with the order owner to ask him to add you as a freelancer for his order (contact information you will find in the detailed description).</li>
-            <li>You can check orders assigned to you on "Assigned Order" page.</li>
-          </ul>
-        </div>
-
-        <div class="subtitle box is-6">
-
-            <nav class="level subtitle">
-
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">By ID</p>
-                        <input class="input is-small" type="text" v-model="idFilter">
-                    </div>
-                </div>
-
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">By Title</p>
-                        <input class="input is-small" type="text" v-model="titleFilter">
-                    </div>
-                </div>
-            
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">By Email</p>
-                        <input class="input is-small" type="email" v-model="emailFilter">
-                    </div>
-                </div>
-
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">By Address</p>
-                        <input class="input is-small" type="text" v-model="addressFilter">
-                    </div>
-                </div>
-                
-            </nav>
-
-        </div>
-      
-      </div>
-
-      <div class="container">
-        <div class="columns" v-if="orders">
-            <home-order-card v-for="order in orderedOrders"
-                v-bind:key="order.id"
-                v-if="!order.owner_lock && !order.freelancer_lock"
-                v-bind:orderData="order"></home-order-card>
+            <ul class="mar">
+              <li>supply contracts</li>
+              <li>employment contracts</li>
+              <li>blockchain secure transactions</li>
+              <li>ETH payments</li>
+            </ul>
+          </div>
+          <div class="col-sm-5 title">
+            <div class="title">
+              <p class="control">
+                <a class="button is-primary is-outlined" v-on:click="showModalOrderCreate = true">
+                  <span class="icon">
+                    <i class="fa fa-plus-circle"></i>
+                  </span>
+                  <span>Create Order</span>
+                </a>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
+      <h2 class="title text-center">How it works</h2>
 
+      <div class="col-sm-12 text-center">
+        <div class="col-sm-12">
+          <iframe
+            width="640px"
+            height="700px"
+            src="https://www.youtube.com/embed/xFa2_PVMeDQ"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <div class="col-sm-12 text-center">Quick withdrawals. Fast support. Fair Dispute Resolution.</div>
+      </div>
+
+      <h2 class="title text-center">Main Features/Benefits</h2>
+
+      <div class="row">
+        <div class="box col-sm-4">
+          <h3 class="subtitle">Maximum security</h3>
+          <span>
+            The platform protects the interests of the parties.
+            <br>The employer can not cheat the freelancer and not pay if the work is done.
+            <br>Freelancers get payment only if project milestones are completed.
+            <br>
+          </span>
+        </div>
+        <div class="box col-sm-4">
+          <h3 class="subtitle">Fast withdrawals</h3>
+          <span>Platform does not delay payments. Once the work is done, the funds are sent to your account.</span>
+        </div>
+        <div class="box col-sm-4">
+          <h3 class="subtitle">Independent moderator support</h3>
+          <span>We resolve conflicts quickly and fairly.</span>
+        </div>
+      </div>
+      <h2 class="title text-center">The process</h2>
+
+      <div class="row">
+        <div class="box col-sm-4">
+          1) Install a special extension
+          <a>Metamask</a>
+        </div>
+        <div class="box col-sm-4">2) Click Create order</div>
+        <div class="box col-sm-4">3) Describe details of project</div>
+        <div class="box col-sm-4">4) Add the address of the freelancer</div>
+        <div class="box col-sm-4">5) Check result</div>
+        <div class="box col-sm-4">6) Accept the payment</div>
+      </div>
+
+      <h2 class="title text-center">Frequently asked questions</h2>
+
+      <div>
+        <ul>
+          <li>Where to find help with a dispute? - Write a letter</li>
+          <li>
+            Where is the money kept? Money is kept on the account, access to which is available only to the
+            customer of the contractor and moderator.
+          </li>
+          <li>Where to buy Ether? - You can buy directly in Metamask. Here is the instruction.</li>
+          <li>Why are you doing this? - We want to make a reliable service and earn a small commission.</li>
+        </ul>
+      </div>
     </div>
+
+    <div class="container">
+      <div class="columns" v-if="orders">
+        <home-order-card
+          v-for="order in orderedOrders"
+          v-bind:key="order.id"
+          v-if="!order.owner_lock && !order.freelancer_lock"
+          v-bind:orderData="order"
+        ></home-order-card>
+      </div>
+    </div>
+  </div>
+</template>
 </template>
 
 <script>
-import HomeOrderCard from "@/components/home-order-card";
+import ModalOrderCreate from "@/components/modal-order-create";
 import { mapState } from "vuex";
 export default {
-  name: "home",
+  name: "nav-bar",
   components: {
-    "home-order-card": HomeOrderCard
+    "modal-order-create": ModalOrderCreate
   },
-  data() { 
-      return {
-          idFilter: null,
-          titleFilter: null,
-          emailFilter: null,
-          addressFilter: null
-      }
+  data() {
+    return {
+      isActive: false,
+      showModalOrderCreate: false
+    };
   },
   computed: mapState({
-    orders: state => state.orders,
-        filteredOrders(state) {
-        let filtered_orders = Object.assign({}, this.orders)
-
-        let id_filter = this.idFilter
-        let title_filter = this.titleFilter
-        let email_filter = this.emailFilter
-        let address_filter = this.addressFilter
-
-        for (let key in filtered_orders) {
-            let delete_flag = false
-            if (id_filter && (key !== id_filter)) {
-                delete_flag = true
-            }
-            else if (!delete_flag && title_filter) {
-                let title_lowercase = filtered_orders[key].title.toLowerCase()
-                let filter_lowercase = title_filter.toLowerCase()
-                if (!title_lowercase.includes(filter_lowercase)) {
-                    delete_flag = true                
-                }
-            } 
-            else if (!delete_flag && email_filter) {
-                let owner_lowercase = filtered_orders[key].owner_email.toLowerCase()
-                let freelancer_lowercase = filtered_orders[key].freelancer_email.toLowerCase()
-                let filter_lowercase = email_filter.toLowerCase()
-                if (owner_lowercase !== filter_lowercase && freelancer_lowercase !== filter_lowercase) {
-                    delete_flag = true                
-                }
-            } 
-            else if (!delete_flag && address_filter) {
-                let owner_lowercase = filtered_orders[key].owner_addr.toLowerCase()
-                let freelancer_lowercase = filtered_orders[key].freelancer_addr.toLowerCase()
-                let filter_lowercase = address_filter.toLowerCase()
-                if (owner_lowercase !== filter_lowercase && freelancer_lowercase !== filter_lowercase) {
-                    delete_flag = true                
-                }
-            } 
-
-            if (delete_flag) delete filtered_orders[key]
-        }
-        return filtered_orders
-    },
-    orderedOrders(state) { return _.orderBy(this.filteredOrders, 'id', 'desc')}
+    isModer: state => state.contractModer,
+    isOwner: state => state.contractOwner
   }),
-  methods: {}
+  methods: {
+    toggleNav() {
+      this.isActive = !this.isActive;
+    }
+  }
 };
 </script>
 
 <style lang="sass" scoped>
 @import "../mq"
 
+.mar
+  margin-top: 3em
+
+.first
+
 .container
-  margin-top: 1.1em
 
 .title
+  margin-top: 2em
   margin-bottom: 1.1em
 
 .box
@@ -152,3 +165,4 @@ ul
 .columns
   flex-wrap: wrap
 </style>
+
