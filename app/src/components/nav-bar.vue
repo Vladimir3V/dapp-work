@@ -4,24 +4,31 @@
     <div class="navbar has-shadow">
       <div class="container">
         <div class="navbar-brand">
-            <router-link to="/" class="navbar-item is-primary">
-              <img src="/static/img/laborX-blue.png" alt="Smiley face" height="100" width="100">
-            </router-link>
+          <router-link to="/" class="navbar-item is-primary">
+            <img src="/static/img/laborX-blue.png" alt="Smiley face" height="100" width="100">
+          </router-link>
 
-            <span class="navbar-burger" v-on:click="toggleNav" v-bind:class="{ 'is-active': isActive }">
-                <span/>
-                <span/>
-                <span/>
-            </span>
+          <span
+            class="navbar-burger"
+            v-on:click="toggleNav"
+            v-bind:class="{ 'is-active': isActive }"
+          >
+            <span/>
+            <span/>
+            <span/>
+          </span>
         </div>
-        
+
         <div class="navbar-menu navbar-end" v-bind:class="{ 'is-active': isActive }">
-          
           <router-link to="/" class="navbar-item r-item">Home</router-link>
           <router-link to="/owner-orders" class="navbar-item r-item">Own Orders</router-link>
           <router-link to="/freelancer-orders" class="navbar-item r-item">Assigned Orders</router-link>
           <router-link to="/moder-orders" class="navbar-item r-item" v-if="isModer">Moder Panel</router-link>
-          <router-link to="/contract-owner-panel" class="navbar-item r-item" v-if="isOwner">Owner Panel</router-link>
+          <router-link
+            to="/contract-owner-panel"
+            class="navbar-item r-item"
+            v-if="isOwner"
+          >Owner Panel</router-link>
           <router-link to="/contacts" class="navbar-item r-item">Contacts</router-link>
 
           <div class="navbar-item">
@@ -34,9 +41,7 @@
               </a>
             </p>
           </div>
-
         </div>
-
       </div>
     </div>
   </div>
@@ -56,14 +61,14 @@ export default {
       showModalOrderCreate: false
     };
   },
-   computed: mapState({
+  computed: mapState({
     isModer: state => state.contractModer,
     isOwner: state => state.contractOwner
   }),
   methods: {
     toggleNav() {
       this.isActive = !this.isActive;
-    },
+    }
   }
 };
 </script>
