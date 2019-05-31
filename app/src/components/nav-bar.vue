@@ -79,11 +79,14 @@ export default {
 };
 </script>
 
+  <!-- Jquery and Js Plugins -->
+
+
 <style lang="sass">
 @import "../mq"
 
 .navbar
-    background-color: #383838
+    
     a:hover
         color: gray
 

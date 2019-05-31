@@ -2,27 +2,24 @@
   <div class="home">
     <modal-order-create v-if="showModalOrderCreate" @close="showModalOrderCreate = false"/>
     <div class="container">
-      <div class="section">
+      <div class="section section_first">
         <div class="row first">
           <div class="col-sm-1"></div>
           <div class="col-sm-6">
-            <h1 class="title">Secure contract platform</h1>
-            <h2 class="subtitle">Replace old paper contract with smart contract</h2>
-
+            <h1 class="title">Pay to contractor secure</h1>
+            <h2
+              class="subtitle"
+            >Service for secure contracting. Replace the paper contract with a smart contract.</h2>
             <ul class="mar">
-              <li>supply contracts</li>
-              <li>employment contracts</li>
-              <li>blockchain secure transactions</li>
+              <li>Marketing and development contracts</li>
+              <li>Blockchain secure transactions</li>
               <li>ETH payments</li>
             </ul>
           </div>
           <div class="col-sm-5 title">
             <div class="title">
               <p class="control">
-                <a class="button is-primary is-outlined" v-on:click="showModalOrderCreate = true">
-                  <span class="icon">
-                    <i class="fa fa-plus-circle"></i>
-                  </span>
+                <a class="button button-create  is-primary is-outlined" v-on:click="showModalOrderCreate = true">
                   <span>Create Order</span>
                 </a>
               </p>
@@ -34,13 +31,7 @@
 
       <div class="col-sm-12 text-center">
         <div class="col-sm-12">
-          <iframe
-            width="640px"
-            height="700px"
-            src="https://www.youtube.com/embed/xFa2_PVMeDQ"
-            frameborder="0"
-            allowfullscreen
-          ></iframe>
+          <iframe width="640px" height="700px" src frameborder="0" allowfullscreen></iframe>
         </div>
         <div class="col-sm-12 text-center">Quick withdrawals. Fast support. Fair Dispute Resolution.</div>
       </div>
@@ -48,23 +39,35 @@
       <h2 class="title text-center">Main Features/Benefits</h2>
 
       <div class="row">
-        <div class="box col-sm-4">
-          <h3 class="subtitle">Maximum security</h3>
+        <div class="col-sm-1"></div>
+        <div class="box col-sm-3">
+          <div class="text-center">
+            <img :src="'./static/img/' + 'icon1' + '.png'" width="80" height="80" alt>
+            <h3 class="subtitle subtitle-feature">Maximum security</h3>
+          </div>
+
           <span>
             The platform protects the interests of the parties.
-            <br>The employer can not cheat the freelancer and not pay if the work is done.
-            <br>Freelancers get payment only if project milestones are completed.
+            <br>Contractor gets payment only if project milestones are completed.
+            <br>The employer can not cheat the contractor and not pay if the work is done.
             <br>
           </span>
         </div>
-        <div class="box col-sm-4">
-          <h3 class="subtitle">Fast withdrawals</h3>
-          <span>Platform does not delay payments. Once the work is done, the funds are sent to your account.</span>
+        <div class="box col-sm-3 box-fetures">
+          <div class="text-center">
+            <img :src="'./static/img/' + 'icon2' + '.png'" width="80" height="80" alt>
+            <h3 class="subtitle subtitle-feature">Fast withdrawals</h3>
+          </div>
+          <span>Platform does not delay payments. Once the work is done, the funds are sent to contractor account.</span>
         </div>
-        <div class="box col-sm-4">
-          <h3 class="subtitle">Independent moderator support</h3>
+        <div class="box col-sm-3 box-fetures">
+          <div class="text-center">
+            <img :src="'./static/img/' + 'icon3' + '.png'" width="80" height="80" alt>
+            <h3 class="subtitle subtitle-feature">Independent moderator support</h3>
+          </div>
           <span>We resolve conflicts quickly and fairly.</span>
         </div>
+        <div class="col-sm-1"></div>
       </div>
       <h2 class="title text-center">The process</h2>
 
@@ -81,8 +84,8 @@
       </div>
 
       <h2 class="title text-center">Frequently asked questions</h2>
-
-      <div>
+      <div class="col-sm-2"></div>
+      <div class="col-sm-10">
         <ul>
           <li>Where to find help with a dispute? - Write a letter</li>
           <li>
@@ -93,6 +96,10 @@
           <li>Why are you doing this? - We want to make a reliable service and earn a small commission.</li>
         </ul>
       </div>
+    </div>
+
+    <div class="section text-center">
+        LaborX 2019
     </div>
 
     <div class="container">
@@ -106,7 +113,6 @@
       </div>
     </div>
   </div>
-</template>
 </template>
 
 <script>
@@ -138,12 +144,13 @@ export default {
 <style lang="sass" scoped>
 @import "../mq"
 
+.section_first
+  background: URL('./static/img/ruki2.png') no-repeat
+  background-position: center
+  background-size: 60%
+
 .mar
   margin-top: 3em
-
-.first
-
-.container
 
 .title
   margin-top: 2em
@@ -152,6 +159,8 @@ export default {
 .box
   margin-bottom: 1.1em
 
+.box-fetures
+  margin-left: 2rem
 ul
   list-style: circle
   margin-left: 1.1em  
@@ -159,10 +168,32 @@ ul
 .table
   flex-wrap: wrap
 
+.subtitle-feature
+    margin: 1rem 0
+
 .column
   overflow: auto
 
 .columns
   flex-wrap: wrap
+
+.button-create:hover
+    background-color: white!important
+    color: blue!important
+    border-color: blue!important
+
+
+.button-create
+    color: white!important
+    margin-top: 6rem
+    background-color: blue!important
+    width: 14rem
+    padding: 1,5rem
+    border-color: blue!important
+
+
+
+
+
 </style>
 
