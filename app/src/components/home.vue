@@ -9,7 +9,9 @@
             <h1 class="title">Pay to contractor secure</h1>
             <h2
               class="subtitle"
-            >Service for secure contracting. Replace the paper contract with a smart contract.</h2>
+            >Service for secure contracting.
+            <br>
+             Replace the paper contract with a smart contract.</h2>
             <ul class="mar">
               <li>Marketing and development contracts</li>
               <li>Blockchain secure transactions</li>
