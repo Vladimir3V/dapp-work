@@ -98,7 +98,7 @@ export default {
 
 a.r-item
     color: #c1c1c1
-    padding: 0.5rem 1.75rem
+    padding: 0.5rem 1rem
     +tablet
         color: gray
         &:hover
