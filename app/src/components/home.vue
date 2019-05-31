@@ -74,7 +74,7 @@
       <div class="row">
         <div class="box col-sm-4">
           1) Install a special extension
-          <a>Metamask</a>
+          <a src="https://metamask.io/">Metamask</a>
         </div>
         <div class="box col-sm-4">2) Click Create order</div>
         <div class="box col-sm-4">3) Describe details of project</div>
@@ -145,7 +145,7 @@ export default {
 @import "../mq"
 
 .section_first
-  background: URL('./static/img/ruki2.png') no-repeat
+  background: URL('https://vladimir3v.github.io/dapp-work-lx/static/img/ruki2.png') no-repeat
   background-position: center
   background-size: 60%
 
