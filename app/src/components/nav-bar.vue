@@ -43,7 +43,7 @@
                 <span class="icon">
                   <i class="fa fa-plus-circle"></i>
                 </span>
-                <span>Create Order</span>
+                <span>Create contract</span>
               </a>
             </p>
           </div>

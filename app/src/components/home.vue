@@ -7,11 +7,10 @@
           <div class="col-sm-1"></div>
           <div class="col-sm-6">
             <h1 class="title">Pay to contractor secure</h1>
-            <h2
-              class="subtitle"
-            >Service for secure contracting.
-            <br>
-             Replace the paper contract with a smart contract.</h2>
+            <h2 class="subtitle">
+              Service for secure contracting.
+              <br>Replace the paper contract with a smart contract.
+            </h2>
             <ul class="mar">
               <li>Marketing and development contracts</li>
               <li>Blockchain secure transactions</li>
@@ -21,8 +20,11 @@
           <div class="col-sm-5 title">
             <div class="title">
               <p class="control">
-                <a class="button button-create  is-primary is-outlined" v-on:click="showModalOrderCreate = true">
-                  <span>Create Order</span>
+                <a
+                  class="button button-create is-primary is-outlined"
+                  v-on:click="showModalOrderCreate = true"
+                >
+                  <span>Create contract</span>
                 </a>
               </p>
             </div>
@@ -33,7 +35,13 @@
 
       <div class="col-sm-12 text-center">
         <div class="col-sm-12">
-          <iframe width="640px" height="700px" src frameborder="0" allowfullscreen></iframe>
+          <iframe
+            width="640"
+            height="480"
+            src="https://www.youtube.com/embed/N4sPrUVsw3c"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
         </div>
         <div class="col-sm-12 text-center">Quick withdrawals. Fast support. Fair Dispute Resolution.</div>
       </div>
@@ -100,9 +108,7 @@
       </div>
     </div>
 
-    <div class="section text-center">
-        LaborX 2019
-    </div>
+    <div class="section text-center">LaborX 2019</div>
 
     <div class="container">
       <div class="columns" v-if="orders">
