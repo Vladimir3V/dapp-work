@@ -6,7 +6,7 @@
         <div class="row first">
           <div class="col-sm-1"></div>
           <div class="col-sm-6">
-            <h1 class="title">Pay to contractor secure</h1>
+            <h1 class="title">Secure deals with smart contracts</h1>
             <h2 class="subtitle">
               Service for secure contracting.
               <br>Replace the paper contract with a smart contract.
